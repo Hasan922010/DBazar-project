@@ -61,6 +61,7 @@ class RouteSpec:
         self.status_code = status_code
         self.auth_required = auth_required
         self.handler = handler
+        self.signature = inspect.signature(handler)
 
 
 class ContractAPIRouter:
@@ -185,15 +186,13 @@ class ContractAPIRouter:
                             details=exc.errors(),
                         ) from exc
 
-                    sig = inspect.signature(spec.handler)
                     for param_name in ("payload", "body", "data"):
-                        if param_name in sig.parameters:
+                        if param_name in spec.signature.parameters:
                             call_kwargs[param_name] = payload_obj
                             break
 
                 # Inject query parameters if expected by handler signature
-                sig = inspect.signature(spec.handler)
-                for p_name, p_obj in sig.parameters.items():
+                for p_name, p_obj in spec.signature.parameters.items():
                     if p_name == "request" or p_name in call_kwargs:
                         continue
                     if p_name in request.GET:

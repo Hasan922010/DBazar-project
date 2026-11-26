@@ -44,14 +44,7 @@ def create_pos_store_endpoint(
         terminal_id=payload.terminal_id,
         address=payload.address,
     )
-    return PosStoreResponse(
-        id=store.id,
-        organization_id=store.organization_id,
-        name=store.name,
-        terminal_id=store.terminal_id,
-        address=store.address,
-        last_hlc_timestamp=store.last_hlc_timestamp,
-    )
+    return PosStoreResponse.model_validate(store)
 
 
 @api_router.post(

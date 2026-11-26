@@ -97,5 +97,10 @@ def get_waybill_endpoint(
     request: HttpRequest,
     waybill_qr_token: str,
 ) -> SubOrderResponse:
-    sub_order = get_waybill_by_qr_token(waybill_qr_token)
+    user: User = request.user  # type: ignore[assignment]
+    org = require_roles(
+        user,
+        [OrganizationRole.CUSTOMER, OrganizationRole.INTERMEDIARY, OrganizationRole.MANUFACTURER],
+    )
+    sub_order = get_waybill_by_qr_token(waybill_qr_token, viewer_org=org)
     return serialize_sub_order(sub_order)

@@ -43,16 +43,7 @@ def generate_ehf_endpoint(
         sub_order_id=payload.sub_order_id,
         pkcs7_signature=payload.pkcs7_signature,
     )
-    return EhfDocumentResponse(
-        id=doc.id,
-        sub_order_id=doc.sub_order_id,
-        didox_doc_id=doc.didox_doc_id,
-        seller_stir=doc.seller_stir,
-        buyer_stir=doc.buyer_stir,
-        total_amount_tiyin=doc.total_amount_tiyin,
-        certificate_serial=doc.certificate_serial,
-        status=doc.status,
-    )
+    return EhfDocumentResponse.model_validate(doc)
 
 
 @api_router.post(
@@ -80,15 +71,7 @@ def register_ofd_receipt_endpoint(
         mxik_codes=payload.mxik_codes,
         hlc_timestamp=payload.hlc_timestamp,
     )
-    return OfdFiscalReceiptResponse(
-        id=receipt.id,
-        pos_sale_id=receipt.pos_sale_id,
-        terminal_id=receipt.terminal_id,
-        receipt_seq=receipt.receipt_seq,
-        total_amount_tiyin=receipt.total_amount_tiyin,
-        fiscal_sign=receipt.fiscal_sign,
-        qr_code_url=receipt.qr_code_url,
-    )
+    return OfdFiscalReceiptResponse.model_validate(receipt)
 
 
 @api_router.post(

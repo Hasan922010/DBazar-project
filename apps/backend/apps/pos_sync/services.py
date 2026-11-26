@@ -1,12 +1,13 @@
 """
 POS Sync Service Layer:
 - HLC-ordered append-only delta event ingestion (`INBOUND`, `SALE`, `RETURN`, `WRITE_OFF`)
-- Zero-conflict idempotency by `client_event_id` (handles 500+ offline Airplane Mode events seamlessly)
+- Batched SQL queries (`bulk_create` + aggregated `InventoryLineage` updates) for 1,000+ RPS scale
+- Monotonic HLC watermark comparison so delayed packets never rewind `last_hlc_timestamp`
 - 1-Click Auto-Inbound by scanning B2B SubOrder `waybill_qr_token`
-- Real-time propagation to `InventoryLineage` for VMI traffic-light analytics
 """
 from __future__ import annotations
 
+from collections import defaultdict
 import uuid
 from typing import Any, Dict, List
 
@@ -51,6 +52,14 @@ def _normalize_signed_delta(event_type: str, raw_qty: int) -> int:
     raise ApiError(400, "INVALID_EVENT_TYPE", f"Noma'lum hodisa turi: {event_type}")
 
 
+def _is_newer_hlc(candidate_hlc: str, current_hlc: str) -> bool:
+    if not candidate_hlc:
+        return False
+    if not current_hlc:
+        return True
+    return parse_hlc_timestamp(candidate_hlc) > parse_hlc_timestamp(current_hlc)
+
+
 @transaction.atomic
 def ingest_pos_delta_events(
     *,
@@ -60,8 +69,7 @@ def ingest_pos_delta_events(
 ) -> Dict[str, Any]:
     """
     Processes a batch of offline POS delta events ordered by HLC timestamp.
-    Deduplicates by `client_event_id` so retries or Airplane Mode reconnects have 0 conflicts.
-    Updates `InventoryLineage` atomically.
+    Uses batched variant lookup, `bulk_create`, and per-SKU aggregated `InventoryLineage` updates.
     """
     store = PosStore.objects.select_for_update().filter(
         id=store_id,
@@ -71,7 +79,6 @@ def ingest_pos_delta_events(
     if store is None:
         raise ApiError(404, "POS_STORE_NOT_FOUND", "POS do'koni topilmadi yoki sizga tegishli emas.")
 
-    # Validate & sort incoming events deterministically by HLC timestamp
     parsed_events: List[tuple[tuple[int, int, str], Dict[str, Any]]] = []
     for ev in events:
         try:
@@ -82,15 +89,22 @@ def ingest_pos_delta_events(
 
     parsed_events.sort(key=lambda pair: pair[0])
 
-    applied_count = 0
-    skipped_duplicates = 0
-    last_hlc = store.last_hlc_timestamp
-
-    # Pre-check existing client_event_ids in a single query
     incoming_ids = [uuid.UUID(str(pair[1]["client_event_id"])) for pair in parsed_events]
     existing_ids = set(
         PosStockEvent.objects.filter(client_event_id__in=incoming_ids).values_list("client_event_id", flat=True)
     )
+
+    needed_variant_ids = {uuid.UUID(str(pair[1]["variant_id"])) for pair in parsed_events}
+    variants_map = {
+        v.id: v
+        for v in ProductVariant.objects.select_related("product").filter(id__in=needed_variant_ids)
+    }
+
+    events_to_create: List[PosStockEvent] = []
+    # (variant_id, batch_id) -> [net_qty_delta, supplied_delta, net_sold_delta]
+    lineage_deltas: Dict[tuple[uuid.UUID, str], List[int]] = defaultdict(lambda: [0, 0, 0])
+    skipped_duplicates = 0
+    max_hlc = store.last_hlc_timestamp
 
     for _, ev in parsed_events:
         client_event_id = uuid.UUID(str(ev["client_event_id"]))
@@ -99,7 +113,7 @@ def ingest_pos_delta_events(
             continue
 
         variant_id = uuid.UUID(str(ev["variant_id"]))
-        variant = ProductVariant.objects.select_related("product").filter(id=variant_id).first()
+        variant = variants_map.get(variant_id)
         if variant is None:
             raise ApiError(404, "VARIANT_NOT_FOUND", f"Tovar varianti topilmadi: {variant_id}")
 
@@ -109,55 +123,72 @@ def ingest_pos_delta_events(
         unit_price_tiyin = int(ev.get("unit_price_tiyin") or 0)
         hlc_str = str(ev["hlc_timestamp"])
 
-        PosStockEvent.objects.create(
-            store=store,
-            client_event_id=client_event_id,
-            variant=variant,
-            batch_id=batch_id,
-            event_type=event_type,
-            qty_delta=qty_delta,
-            unit_price_tiyin=unit_price_tiyin,
-            hlc_timestamp=hlc_str,
-            waybill_qr_token=str(ev.get("waybill_qr_token") or ""),
-        )
-        existing_ids.add(client_event_id)
-        applied_count += 1
-        last_hlc = hlc_str
-
-        # Update InventoryLineage for VMI real-time visibility
-        lineage = (
-            InventoryLineage.objects.select_for_update()
-            .filter(customer_org=customer_org, variant=variant, batch_id=batch_id)
-            .first()
-        )
-        if lineage is None:
-            lineage = InventoryLineage.objects.create(
+        events_to_create.append(
+            PosStockEvent(
+                store=store,
+                client_event_id=client_event_id,
                 variant=variant,
                 batch_id=batch_id,
-                manufacturer_org=variant.product.manufacturer,
-                intermediary_org=None,
-                customer_org=customer_org,
-                supplied_qty=max(qty_delta, 0),
-                current_pos_qty=qty_delta,
-                sold_pos_qty=abs(qty_delta) if event_type == PosStockEventType.SALE else 0,
+                event_type=event_type,
+                qty_delta=qty_delta,
+                unit_price_tiyin=unit_price_tiyin,
+                hlc_timestamp=hlc_str,
+                waybill_qr_token=str(ev.get("waybill_qr_token") or ""),
             )
-        else:
-            lineage.current_pos_qty += qty_delta
-            if event_type == PosStockEventType.INBOUND:
-                lineage.supplied_qty += qty_delta
-            elif event_type == PosStockEventType.SALE:
-                lineage.sold_pos_qty += abs(qty_delta)
-            elif event_type == PosStockEventType.RETURN:
-                lineage.sold_pos_qty = max(0, lineage.sold_pos_qty - abs(qty_delta))
-            lineage.save(update_fields=["supplied_qty", "current_pos_qty", "sold_pos_qty", "updated_at"])
+        )
+        existing_ids.add(client_event_id)
+        if _is_newer_hlc(hlc_str, max_hlc):
+            max_hlc = hlc_str
 
-    if last_hlc and last_hlc != store.last_hlc_timestamp:
-        store.last_hlc_timestamp = last_hlc
+        acc = lineage_deltas[(variant_id, batch_id)]
+        acc[0] += qty_delta
+        if event_type == PosStockEventType.INBOUND:
+            acc[1] += qty_delta
+        elif event_type == PosStockEventType.SALE:
+            acc[2] += abs(qty_delta)
+        elif event_type == PosStockEventType.RETURN:
+            acc[2] -= abs(qty_delta)
+
+    if events_to_create:
+        PosStockEvent.objects.bulk_create(events_to_create)
+
+    if lineage_deltas:
+        existing_lineages = {
+            (ln.variant_id, ln.batch_id): ln
+            for ln in InventoryLineage.objects.select_for_update().filter(
+                customer_org=customer_org,
+                variant_id__in=[vid for vid, _ in lineage_deltas.keys()],
+            )
+        }
+        for (variant_id, batch_id), (net_qty, supplied_add, sold_delta) in sorted(
+            lineage_deltas.items(), key=lambda item: (str(item[0][0]), item[0][1])
+        ):
+            variant = variants_map[variant_id]
+            lineage = existing_lineages.get((variant_id, batch_id))
+            if lineage is None:
+                InventoryLineage.objects.create(
+                    variant=variant,
+                    batch_id=batch_id,
+                    manufacturer_org=variant.product.manufacturer,
+                    intermediary_org=None,
+                    customer_org=customer_org,
+                    supplied_qty=max(supplied_add, 0),
+                    current_pos_qty=net_qty,
+                    sold_pos_qty=max(0, sold_delta),
+                )
+            else:
+                lineage.current_pos_qty += net_qty
+                lineage.supplied_qty += supplied_add
+                lineage.sold_pos_qty = max(0, lineage.sold_pos_qty + sold_delta)
+                lineage.save(update_fields=["supplied_qty", "current_pos_qty", "sold_pos_qty", "updated_at"])
+
+    if _is_newer_hlc(max_hlc, store.last_hlc_timestamp):
+        store.last_hlc_timestamp = max_hlc
         store.save(update_fields=["last_hlc_timestamp"])
 
     return {
         "store_id": store.id,
-        "applied_events": applied_count,
+        "applied_events": len(events_to_create),
         "skipped_duplicates": skipped_duplicates,
         "conflicts": 0,
         "last_hlc_timestamp": store.last_hlc_timestamp,
@@ -199,7 +230,6 @@ def execute_one_click_waybill_inbound(
     inbounded_count = 0
 
     for item in items:
-        # Deterministic UUID5 from (store.id, sub_order.id, item.id) so re-scanning the QR is 100% idempotent
         deterministic_event_id = uuid.uuid5(
             uuid.NAMESPACE_URL,
             f"dbazar:1click-inbound:{store.id}:{sub_order.id}:{item.id}",
@@ -229,7 +259,7 @@ def execute_one_click_waybill_inbound(
         )
         inbounded_count += 1
 
-    if hlc:
+    if hlc and _is_newer_hlc(hlc, store.last_hlc_timestamp):
         store.last_hlc_timestamp = hlc
         store.save(update_fields=["last_hlc_timestamp"])
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import uuid
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RegisterOrganizationRequest(BaseModel):
@@ -30,6 +30,8 @@ class KybVerifyRequest(BaseModel):
 
 
 class OrganizationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     name: str
     legal_name: str
@@ -41,6 +43,8 @@ class OrganizationResponse(BaseModel):
 
 
 class UserProfileResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     username: str
     phone: str

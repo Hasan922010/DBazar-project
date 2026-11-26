@@ -6,7 +6,6 @@ readme = "AGENTS.md"
 requires-python = ">=3.12"
 dependencies = [
     "django>=5.1",
-    "djangorestframework>=3.15.0",
     "pydantic>=2.9.0",
     "psycopg>=3.2.0",
     "requests>=2.32.0",

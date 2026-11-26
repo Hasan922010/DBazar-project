@@ -727,8 +727,8 @@ paths:
   /api/v1/billing/escrow/release:
     post:
       operationId: releaseSubOrderEscrow
-      summary: SubOrder topshirilgach Escrow mablag'ini Split Settlement orqali sotuvchiga
-        o'tkazish
+      summary: SubOrder topshirilgach xaridor tomonidan Escrow mablag'ini Split Settlement
+        orqali sotuvchiga o'tkazish
       tags:
       - Billing & Escrow
       parameters:
@@ -1095,7 +1095,8 @@ paths:
   /api/v1/logistics/shipments:
     post:
       operationId: createOrAssignShipment
-      summary: SubOrder uchun yetkazib berish (Shipment) yaratish va OTP kod shakllantirish
+      summary: SubOrder uchun yetkazib berish (Shipment) yaratish va xaridorga maxfiy
+        OTP kod shakllantirish
       tags:
       - Logistics & POD
       parameters:
@@ -1193,8 +1194,8 @@ paths:
   /api/v1/logistics/shipments/{shipment_id}/pod:
     post:
       operationId: confirmShipmentProofOfDelivery
-      summary: 'Topshirdim (POD): OTP kod orqali yuk topshirilganini tasdiqlash va
-        Escrow to''lovini sotuvchiga yechish'
+      summary: 'Topshirdim (POD): Xaridorning OTP kodi orqali yuk topshirilganini
+        tasdiqlash va Escrow to''lovini yechish'
       tags:
       - Logistics & POD
       parameters:
@@ -2317,12 +2318,6 @@ components:
           format: uuid
           title: Idempotency Key
           type: string
-        platform_fee_bps:
-          default: 100
-          maximum: 2000
-          minimum: 0
-          title: Platform Fee Bps
-          type: integer
       required:
       - sub_order_id
       - idempotency_key
@@ -2742,9 +2737,6 @@ components:
         status:
           title: Status
           type: string
-        pod_otp_code:
-          title: Pod Otp Code
-          type: string
         current_lat_microdeg:
           title: Current Lat Microdeg
           type: integer
@@ -2758,7 +2750,6 @@ components:
       - id
       - sub_order_id
       - status
-      - pod_otp_code
       - current_lat_microdeg
       - current_lng_microdeg
       - pod_photo_url

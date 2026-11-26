@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from django.http import HttpRequest
 
-from apps.iam.models import Organization, User
+from apps.iam.models import User
 from apps.iam.schemas import (
     AuthTokenResponse,
     KybVerifyRequest,
@@ -20,30 +20,6 @@ from apps.iam.services import (
     verify_organization_kyb_with_eimzo,
 )
 from config.api_router import ApiError, api_router
-
-
-def _serialize_org(org: Organization) -> OrganizationResponse:
-    return OrganizationResponse(
-        id=org.id,
-        name=org.name,
-        legal_name=org.legal_name,
-        stir_inn=org.stir_inn,
-        role=org.role,
-        kyb_status=org.kyb_status,
-        eimzo_cert_serial=org.eimzo_cert_serial,
-        region=org.region,
-    )
-
-
-def _serialize_user(user: User) -> UserProfileResponse:
-    return UserProfileResponse(
-        id=user.id,
-        username=user.username,
-        phone=user.phone,
-        role=user.role,
-        is_2fa_enabled=user.is_2fa_enabled,
-        organization=_serialize_org(user.organization) if user.organization else None,
-    )
 
 
 @api_router.post(
@@ -68,7 +44,7 @@ def register_endpoint(request: HttpRequest, payload: RegisterOrganizationRequest
         address=payload.address,
     )
     user.organization = org
-    return AuthTokenResponse(access_token=token, user=_serialize_user(user))
+    return AuthTokenResponse(access_token=token, user=UserProfileResponse.model_validate(user))
 
 
 @api_router.post(
@@ -82,7 +58,7 @@ def register_endpoint(request: HttpRequest, payload: RegisterOrganizationRequest
 )
 def login_endpoint(request: HttpRequest, payload: LoginRequest) -> AuthTokenResponse:
     user, token = authenticate_user_credentials(payload.username, payload.password)
-    return AuthTokenResponse(access_token=token, user=_serialize_user(user))
+    return AuthTokenResponse(access_token=token, user=UserProfileResponse.model_validate(user))
 
 
 @api_router.post(
@@ -102,7 +78,7 @@ def verify_kyb_endpoint(request: HttpRequest, payload: KybVerifyRequest) -> Orga
         organization_id=user.organization_id,
         pkcs7_signature=payload.pkcs7_signature,
     )
-    return _serialize_org(org)
+    return OrganizationResponse.model_validate(org)
 
 
 @api_router.get(
@@ -116,4 +92,4 @@ def verify_kyb_endpoint(request: HttpRequest, payload: KybVerifyRequest) -> Orga
 )
 def me_endpoint(request: HttpRequest) -> UserProfileResponse:
     user: User = request.user  # type: ignore[assignment]
-    return _serialize_user(user)
+    return UserProfileResponse.model_validate(user)

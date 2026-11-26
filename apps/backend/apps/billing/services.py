@@ -22,11 +22,12 @@ from apps.billing.models import (
     EscrowStatus,
     LedgerAccount,
 )
-from apps.iam.models import Organization
+from apps.iam.models import Organization, OrganizationRole
 from apps.inventory.models import InventoryLineage, PosTelemetryPermission
-from apps.inventory.services import record_supply_lineage
 from apps.orders.models import Order, OrderStatus, SubOrder
 from config.api_router import ApiError
+
+DEFAULT_PLATFORM_FEE_BPS = 100
 
 
 def get_or_create_ledger_account(
@@ -202,30 +203,34 @@ def release_escrow_split_settlement(
     *,
     sub_order_id: uuid.UUID,
     idempotency_key: uuid.UUID,
-    platform_fee_bps: int = 100,
+    caller_org: Optional[Organization] = None,
+    platform_fee_bps: int = DEFAULT_PLATFORM_FEE_BPS,
 ) -> EscrowHold:
     """
     Releases Escrow for a delivered SubOrder using Split Settlement:
     - `platform_fee_tiyin = (amount_tiyin * platform_fee_bps) // 10_000`
     - `seller_net_tiyin = amount_tiyin - platform_fee_tiyin`
     Invariant: `seller_net_tiyin + platform_fee_tiyin == amount_tiyin` (0 tiyin difference!).
-    Also records Multi-Tier InventoryLineage for the customer organization.
+    When called directly by a user (`caller_org` is provided), verifies buyer ownership.
     """
     existing_by_key = EscrowHold.objects.filter(release_idempotency_key=idempotency_key).first()
     if existing_by_key is not None:
         if existing_by_key.sub_order_id != sub_order_id:
             raise ApiError(409, "IDEMPOTENCY_KEY_CONFLICT", "Release idempotency kaliti boshqa SubOrder ga tegishli.")
+        if caller_org is not None and caller_org.role != OrganizationRole.ADMIN and existing_by_key.buyer_org_id != caller_org.id:
+            raise ApiError(403, "FORBIDDEN_ESCROW_RELEASE", "Faqat xaridor tashkilot Escrow to'lovini tasdiqlay oladi.")
         return existing_by_key
 
     sub_order = (
         SubOrder.objects.select_for_update()
         .select_related("order", "order__buyer_org", "seller_org")
-        .prefetch_related("items__variant__product")
         .filter(id=sub_order_id)
         .first()
     )
     if sub_order is None:
         raise ApiError(404, "SUBORDER_NOT_FOUND", "SubOrder topilmadi.")
+    if caller_org is not None and caller_org.role != OrganizationRole.ADMIN and sub_order.order.buyer_org_id != caller_org.id:
+        raise ApiError(403, "FORBIDDEN_ESCROW_RELEASE", "Faqat xaridor tashkilot Escrow to'lovini tasdiqlay oladi.")
 
     hold = EscrowHold.objects.select_for_update().filter(sub_order=sub_order).first()
     if hold is None:
@@ -275,17 +280,6 @@ def release_escrow_split_settlement(
 
     sub_order.status = OrderStatus.DELIVERED
     sub_order.save(update_fields=["status", "updated_at"])
-
-    # Update InventoryLineage for VMI tracking
-    for item in sub_order.items.all():
-        record_supply_lineage(
-            variant=item.variant,
-            batch_id=item.batch_id,
-            customer_org=sub_order.order.buyer_org,
-            supplied_qty=item.quantity,
-            manufacturer_org=item.variant.product.manufacturer,
-            intermediary_org=sub_order.seller_org,
-        )
 
     # Check if all sub_orders of the parent order are delivered
     if not sub_order.order.sub_orders.exclude(status=OrderStatus.DELIVERED).exists():

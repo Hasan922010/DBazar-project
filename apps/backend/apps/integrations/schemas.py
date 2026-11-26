@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import uuid
 from typing import List, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class GenerateDidoxEhfRequest(BaseModel):
@@ -14,6 +14,8 @@ class GenerateDidoxEhfRequest(BaseModel):
 
 
 class EhfDocumentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     sub_order_id: uuid.UUID
     didox_doc_id: str
@@ -35,6 +37,8 @@ class RegisterOfdReceiptRequest(BaseModel):
 
 
 class OfdFiscalReceiptResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     pos_sale_id: uuid.UUID
     terminal_id: str

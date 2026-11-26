@@ -1,11 +1,12 @@
 """
 Pydantic v2 Contracts for Logistics (Lite-TMS, GPS Tracking & Proof of Delivery).
+`pod_otp_code` is intentionally excluded from `ShipmentResponse` so drivers cannot self-confirm POD.
 """
 from __future__ import annotations
 
 import uuid
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AssignShipmentRequest(BaseModel):
@@ -25,10 +26,11 @@ class ConfirmPodRequest(BaseModel):
 
 
 class ShipmentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     sub_order_id: uuid.UUID
     status: str
-    pod_otp_code: str
     current_lat_microdeg: int
     current_lng_microdeg: int
     pod_photo_url: str

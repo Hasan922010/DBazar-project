@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import uuid
 from typing import List, Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class WalletTopupRequest(BaseModel):
@@ -15,6 +15,8 @@ class WalletTopupRequest(BaseModel):
 
 
 class LedgerAccountResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     organization_id: Optional[uuid.UUID] = None
     account_type: str
@@ -33,10 +35,11 @@ class EscrowHoldRequest(BaseModel):
 class EscrowReleaseRequest(BaseModel):
     sub_order_id: uuid.UUID
     idempotency_key: uuid.UUID
-    platform_fee_bps: int = Field(default=100, ge=0, le=2000)
 
 
 class EscrowHoldResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     order_id: uuid.UUID
     sub_order_id: uuid.UUID
