@@ -1,0 +1,17 @@
+{
+  "name": "dbazar-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    " packages/mocks-and-emulators/*",
+    "apps/web-portal",
+    "apps/pos-client",
+    "apps/mobile-app"
+  ],
+  "scripts": {
+    "contracts:generate": "pnpm --filter @dbazar/contracts generate",
+    "backend:test": "cd apps/backend && uv run pytest",
+    "backend:openapi": "cd apps/backend && uv run python manage.py export_openapi"
+  }
+}

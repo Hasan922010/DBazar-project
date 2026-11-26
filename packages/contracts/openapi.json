@@ -1,0 +1,4121 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DBazar B2B Supply Chain, VMI & Offline-First Cloud POS API",
+    "version": "1.0.0",
+    "description": "Contract-First OpenAPI 3.1 specification generated from Django 5 + Pydantic v2 schemas."
+  },
+  "paths": {
+    "/api/v1/iam/register": {
+      "post": {
+        "operationId": "registerOrganizationAndUser",
+        "summary": "Tashkilot va foydalanuvchini ro'yxatdan o'tkazish",
+        "tags": [
+          "IAM"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterOrganizationRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/iam/login": {
+      "post": {
+        "operationId": "loginUser",
+        "summary": "Tizimga kirish va JWT token olish",
+        "tags": [
+          "IAM"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/iam/kyb/verify": {
+      "post": {
+        "operationId": "verifyOrganizationKyb",
+        "summary": "E-Imzo PKCS#7 orqali tashkilot KYB maqomini tasdiqlash",
+        "tags": [
+          "IAM"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KybVerifyRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/iam/me": {
+      "get": {
+        "operationId": "getCurrentUserProfile",
+        "summary": "Joriy foydalanuvchi va tashkilot profili",
+        "tags": [
+          "IAM"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/catalog/products": {
+      "post": {
+        "operationId": "createCatalogProductVariant",
+        "summary": "17 xonali MXIK bilan yangi tovar va variant yaratish",
+        "tags": [
+          "Catalog"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductVariantResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductVariantRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/offers": {
+      "post": {
+        "operationId": "upsertCatalogOffer",
+        "summary": "Ulgurji narx va hajmga qarab narx pog'onalarini (Tiered Pricing) belgilash",
+        "tags": [
+          "Catalog"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfferResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertOfferRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listCatalogOffers",
+        "summary": "Tovarlarni qidirish va ulgurji narxlarni solishtirish",
+        "tags": [
+          "Catalog"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfferListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/offers/{offer_id}/calculate-price": {
+      "post": {
+        "operationId": "calculateOfferTieredPrice",
+        "summary": "Miqdorga qarab Tiered Pricing narxini (tiyinlarda) hisoblash",
+        "tags": [
+          "Catalog"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "offer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalculatePriceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculatePriceRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/warehouses": {
+      "post": {
+        "operationId": "createInventoryWarehouse",
+        "summary": "Tashkilot uchun yangi ombor yaratish",
+        "tags": [
+          "Inventory"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WarehouseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWarehouseRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/stocks/receive": {
+      "post": {
+        "operationId": "receiveWarehouseStock",
+        "summary": "Omborga partiya (batch_id) va yaroqlilik muddati bilan tovar kirim qilish",
+        "tags": [
+          "Inventory"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryStockResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiveStockRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/vmi/permissions": {
+      "post": {
+        "operationId": "setPosTelemetryPermission",
+        "summary": "Do'kon tomonidan yetkazib beruvchiga VMI telemetriya ruxsatini berish yoki bekor qilish",
+        "tags": [
+          "Inventory & VMI"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelemetryPermissionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelemetryPermissionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/vmi/telemetry": {
+      "get": {
+        "operationId": "getVmiTelemetryDashboard",
+        "summary": "VMI Svetofor Analitika: Do'konlardagi qoldiq, kunlik sotuv va tez tugaydigan tovarlar (Tenant-Isolated)",
+        "tags": [
+          "Inventory & VMI"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VmiTelemetryDashboardResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders": {
+      "post": {
+        "operationId": "createB2BOrder",
+        "summary": "B2B savatchani rasmiylashtirish va sotuvchilar bo'yicha SubOrder larga ajratish (Order Splitting)",
+        "tags": [
+          "Orders"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/waybill/{waybill_qr_token}": {
+      "get": {
+        "operationId": "getSubOrderWaybillByQr",
+        "summary": "Yuk xati QR-kodi orqali SubOrder tovarlari, MXIK va narxlarini olish (1-Click Avto-Kirim uchun)",
+        "tags": [
+          "Orders"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "waybill_qr_token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubOrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/billing/wallet/topup": {
+      "post": {
+        "operationId": "topupBuyerWallet",
+        "summary": "Xaridor hamyonini Payme/Click/Bank orqali to'ldirish (Double-Entry + Idempotent)",
+        "tags": [
+          "Billing & Escrow"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerAccountResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WalletTopupRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/billing/escrow/hold": {
+      "post": {
+        "operationId": "holdOrderEscrow",
+        "summary": "Buyurtma to'lovini yetkazib berilgunga qadar Escrow hisobida muzlatish",
+        "tags": [
+          "Billing & Escrow"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscrowHoldListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EscrowHoldRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/billing/escrow/release": {
+      "post": {
+        "operationId": "releaseSubOrderEscrow",
+        "summary": "SubOrder topshirilgach Escrow mablag'ini Split Settlement orqali sotuvchiga o'tkazish",
+        "tags": [
+          "Billing & Escrow"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscrowHoldResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EscrowReleaseRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/billing/credit-scoring/evaluate": {
+      "post": {
+        "operationId": "evaluateDataForCreditLimit",
+        "summary": "Data-for-Credit: POS telemetriya asosida avtomatik B2B nasiya limiti va 3-5% chegirmani hisoblash",
+        "tags": [
+          "Billing & Escrow"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerAccountResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/pos-sync/stores": {
+      "post": {
+        "operationId": "createPosStore",
+        "summary": "Yangi POS kassa nuqtasini ro'yxatdan o'tkazish",
+        "tags": [
+          "POS Sync"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PosStoreResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePosStoreRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pos-sync/delta": {
+      "post": {
+        "operationId": "syncPosDeltaBatch",
+        "summary": "Oflayn POS kassadan append-only HLC Delta-paketni ziddiyatsiz sinxronlash",
+        "tags": [
+          "POS Sync"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PosDeltaSyncBatchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PosDeltaSyncBatchRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pos-sync/one-click-inbound": {
+      "post": {
+        "operationId": "oneClickWaybillInbound",
+        "summary": "1-Click Avto-Kirim: Yuk xati QR-kodini skanerlab barcha tovar va MXIK larni 1 soniyada kirim qilish",
+        "tags": [
+          "POS Sync"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OneClickWaybillInboundResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OneClickWaybillInboundRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/didox/ehf": {
+      "post": {
+        "operationId": "generateDidoxEhfDocument",
+        "summary": "SubOrder uchun Didox elektron hisobvaraq-faktura (EHF) yaratish va E-Imzo PKCS#7 ni tekshirish",
+        "tags": [
+          "Integrations (Soliq & Didox)"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EhfDocumentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateDidoxEhfRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/soliq/ofd-receipt": {
+      "post": {
+        "operationId": "registerSoliqOfdFiscalReceipt",
+        "summary": "Soliq.uz Virtual Kassa (OFD) orqali POS chekiga fiskal belgi va QR-kod olish",
+        "tags": [
+          "Integrations (Soliq & Didox)"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfdFiscalReceiptResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterOfdReceiptRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/dbazar-connect/inbound": {
+      "post": {
+        "operationId": "dbazarConnectExternalInbound",
+        "summary": "DBazar Connect: 1C:Roznitsa, Billz, Regos va F-Apteka kassalaridan 1-Click Avto-Kirim qilish",
+        "tags": [
+          "Integrations (DBazar Connect)"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DbazarConnectInboundResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DbazarConnectInboundRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logistics/shipments": {
+      "post": {
+        "operationId": "createOrAssignShipment",
+        "summary": "SubOrder uchun yetkazib berish (Shipment) yaratish va OTP kod shakllantirish",
+        "tags": [
+          "Logistics & POD"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShipmentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignShipmentRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logistics/shipments/{shipment_id}/gps": {
+      "post": {
+        "operationId": "updateShipmentGpsAndStatus",
+        "summary": "Haydovchi GPS koordinatasi va holatini yangilash (Ombordan oldim -> Yo'lga chiqdim)",
+        "tags": [
+          "Logistics & POD"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "shipment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShipmentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShipmentGpsRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logistics/shipments/{shipment_id}/pod": {
+      "post": {
+        "operationId": "confirmShipmentProofOfDelivery",
+        "summary": "Topshirdim (POD): OTP kod orqali yuk topshirilganini tasdiqlash va Escrow to'lovini sotuvchiga yechish",
+        "tags": [
+          "Logistics & POD"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "shipment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShipmentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmPodRequest"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ErrorResponseSchema": {
+        "properties": {
+          "error_code": {
+            "title": "Error Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "correlation_id": {
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "details": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Details"
+          }
+        },
+        "required": [
+          "error_code",
+          "message",
+          "correlation_id"
+        ],
+        "title": "ErrorResponseSchema",
+        "type": "object"
+      },
+      "RegisterOrganizationRequest": {
+        "properties": {
+          "username": {
+            "maxLength": 64,
+            "minLength": 3,
+            "title": "Username",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 6,
+            "title": "Password",
+            "type": "string"
+          },
+          "phone": {
+            "maxLength": 20,
+            "minLength": 9,
+            "title": "Phone",
+            "type": "string"
+          },
+          "org_name": {
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Org Name",
+            "type": "string"
+          },
+          "legal_name": {
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Legal Name",
+            "type": "string"
+          },
+          "stir_inn": {
+            "description": "9 xonali STIR (INN)",
+            "pattern": "^\\d{9}$",
+            "title": "Stir Inn",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "MANUFACTURER",
+              "INTERMEDIARY",
+              "LOGISTICS",
+              "CUSTOMER",
+              "ADMIN"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "region": {
+            "default": "Toshkent",
+            "title": "Region",
+            "type": "string"
+          },
+          "address": {
+            "default": "",
+            "title": "Address",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password",
+          "phone",
+          "org_name",
+          "legal_name",
+          "stir_inn",
+          "role"
+        ],
+        "title": "RegisterOrganizationRequest",
+        "type": "object"
+      },
+      "OrganizationResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "legal_name": {
+            "title": "Legal Name",
+            "type": "string"
+          },
+          "stir_inn": {
+            "title": "Stir Inn",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "kyb_status": {
+            "title": "Kyb Status",
+            "type": "string"
+          },
+          "eimzo_cert_serial": {
+            "title": "Eimzo Cert Serial",
+            "type": "string"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "legal_name",
+          "stir_inn",
+          "role",
+          "kyb_status",
+          "eimzo_cert_serial",
+          "region"
+        ],
+        "title": "OrganizationResponse",
+        "type": "object"
+      },
+      "UserProfileResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "phone": {
+            "title": "Phone",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "is_2fa_enabled": {
+            "title": "Is 2Fa Enabled",
+            "type": "boolean"
+          },
+          "organization": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OrganizationResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "phone",
+          "role",
+          "is_2fa_enabled"
+        ],
+        "title": "UserProfileResponse",
+        "type": "object"
+      },
+      "AuthTokenResponse": {
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string"
+          },
+          "token_type": {
+            "default": "Bearer",
+            "title": "Token Type",
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserProfileResponse"
+          }
+        },
+        "required": [
+          "access_token",
+          "user"
+        ],
+        "title": "AuthTokenResponse",
+        "type": "object"
+      },
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
+      "KybVerifyRequest": {
+        "properties": {
+          "pkcs7_signature": {
+            "description": "E-Imzo PKCS#7 raqamli imzosi",
+            "minLength": 12,
+            "title": "Pkcs7 Signature",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pkcs7_signature"
+        ],
+        "title": "KybVerifyRequest",
+        "type": "object"
+      },
+      "CreateProductVariantRequest": {
+        "properties": {
+          "name": {
+            "description": "Tovar nomi",
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          },
+          "brand": {
+            "default": "",
+            "title": "Brand",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "sku": {
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Sku",
+            "type": "string"
+          },
+          "variant_name": {
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Variant Name",
+            "type": "string"
+          },
+          "mxik_code": {
+            "description": "17 xonali MXIK kodi",
+            "pattern": "^\\d{17}$",
+            "title": "Mxik Code",
+            "type": "string"
+          },
+          "barcode": {
+            "maxLength": 32,
+            "minLength": 4,
+            "title": "Barcode",
+            "type": "string"
+          },
+          "unit_type": {
+            "default": "PCS",
+            "enum": [
+              "PCS",
+              "BOX",
+              "KG",
+              "LITER"
+            ],
+            "title": "Unit Type",
+            "type": "string"
+          },
+          "packaging_coefficient": {
+            "default": 1,
+            "minimum": 1,
+            "title": "Packaging Coefficient",
+            "type": "integer"
+          },
+          "weight_grams": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Weight Grams",
+            "type": "integer"
+          },
+          "category_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Category Slug"
+          }
+        },
+        "required": [
+          "name",
+          "sku",
+          "variant_name",
+          "mxik_code",
+          "barcode"
+        ],
+        "title": "CreateProductVariantRequest",
+        "type": "object"
+      },
+      "ProductVariantResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "product_id": {
+            "format": "uuid",
+            "title": "Product Id",
+            "type": "string"
+          },
+          "product_name": {
+            "title": "Product Name",
+            "type": "string"
+          },
+          "brand": {
+            "title": "Brand",
+            "type": "string"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "variant_name": {
+            "title": "Variant Name",
+            "type": "string"
+          },
+          "mxik_code": {
+            "title": "Mxik Code",
+            "type": "string"
+          },
+          "barcode": {
+            "title": "Barcode",
+            "type": "string"
+          },
+          "unit_type": {
+            "title": "Unit Type",
+            "type": "string"
+          },
+          "packaging_coefficient": {
+            "title": "Packaging Coefficient",
+            "type": "integer"
+          },
+          "weight_grams": {
+            "title": "Weight Grams",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "product_id",
+          "product_name",
+          "brand",
+          "sku",
+          "variant_name",
+          "mxik_code",
+          "barcode",
+          "unit_type",
+          "packaging_coefficient",
+          "weight_grams"
+        ],
+        "title": "ProductVariantResponse",
+        "type": "object"
+      },
+      "PriceTierInput": {
+        "properties": {
+          "min_qty": {
+            "minimum": 1,
+            "title": "Min Qty",
+            "type": "integer"
+          },
+          "max_qty": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max Qty"
+          },
+          "unit_price_tiyin": {
+            "description": "1 birlik narxi (tiyinlarda)",
+            "exclusiveMinimum": 0,
+            "title": "Unit Price Tiyin",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "min_qty",
+          "unit_price_tiyin"
+        ],
+        "title": "PriceTierInput",
+        "type": "object"
+      },
+      "UpsertOfferRequest": {
+        "properties": {
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "base_price_tiyin": {
+            "description": "Bazaviy narx (tiyinlarda)",
+            "exclusiveMinimum": 0,
+            "title": "Base Price Tiyin",
+            "type": "integer"
+          },
+          "min_order_qty": {
+            "default": 1,
+            "minimum": 1,
+            "title": "Min Order Qty",
+            "type": "integer"
+          },
+          "tiers": {
+            "items": {
+              "$ref": "#/components/schemas/PriceTierInput"
+            },
+            "title": "Tiers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "variant_id",
+          "base_price_tiyin"
+        ],
+        "title": "UpsertOfferRequest",
+        "type": "object"
+      },
+      "PriceTierResponse": {
+        "properties": {
+          "min_qty": {
+            "title": "Min Qty",
+            "type": "integer"
+          },
+          "max_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max Qty"
+          },
+          "unit_price_tiyin": {
+            "title": "Unit Price Tiyin",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "min_qty",
+          "unit_price_tiyin"
+        ],
+        "title": "PriceTierResponse",
+        "type": "object"
+      },
+      "OfferResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "seller_id": {
+            "format": "uuid",
+            "title": "Seller Id",
+            "type": "string"
+          },
+          "seller_name": {
+            "title": "Seller Name",
+            "type": "string"
+          },
+          "variant": {
+            "$ref": "#/components/schemas/ProductVariantResponse"
+          },
+          "base_price_tiyin": {
+            "title": "Base Price Tiyin",
+            "type": "integer"
+          },
+          "min_order_qty": {
+            "title": "Min Order Qty",
+            "type": "integer"
+          },
+          "price_tiers": {
+            "items": {
+              "$ref": "#/components/schemas/PriceTierResponse"
+            },
+            "title": "Price Tiers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "seller_id",
+          "seller_name",
+          "variant",
+          "base_price_tiyin",
+          "min_order_qty",
+          "price_tiers"
+        ],
+        "title": "OfferResponse",
+        "type": "object"
+      },
+      "OfferListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OfferResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "OfferListResponse",
+        "type": "object"
+      },
+      "CalculatePriceRequest": {
+        "properties": {
+          "quantity": {
+            "minimum": 1,
+            "title": "Quantity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "quantity"
+        ],
+        "title": "CalculatePriceRequest",
+        "type": "object"
+      },
+      "CalculatePriceResponse": {
+        "properties": {
+          "offer_id": {
+            "format": "uuid",
+            "title": "Offer Id",
+            "type": "string"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "unit_price_tiyin": {
+            "title": "Unit Price Tiyin",
+            "type": "integer"
+          },
+          "total_price_tiyin": {
+            "title": "Total Price Tiyin",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "offer_id",
+          "quantity",
+          "unit_price_tiyin",
+          "total_price_tiyin"
+        ],
+        "title": "CalculatePriceResponse",
+        "type": "object"
+      },
+      "CreateWarehouseRequest": {
+        "properties": {
+          "name": {
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          },
+          "code": {
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Code",
+            "type": "string"
+          },
+          "region": {
+            "default": "Toshkent",
+            "title": "Region",
+            "type": "string"
+          },
+          "address": {
+            "default": "",
+            "title": "Address",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "code"
+        ],
+        "title": "CreateWarehouseRequest",
+        "type": "object"
+      },
+      "WarehouseResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "organization_id": {
+            "format": "uuid",
+            "title": "Organization Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          },
+          "address": {
+            "title": "Address",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "organization_id",
+          "name",
+          "code",
+          "region",
+          "address"
+        ],
+        "title": "WarehouseResponse",
+        "type": "object"
+      },
+      "ReceiveStockRequest": {
+        "properties": {
+          "warehouse_id": {
+            "format": "uuid",
+            "title": "Warehouse Id",
+            "type": "string"
+          },
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "batch_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "qty": {
+            "exclusiveMinimum": 0,
+            "title": "Qty",
+            "type": "integer"
+          },
+          "expiry_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Expiry Date"
+          },
+          "min_stock_threshold": {
+            "default": 10,
+            "minimum": 0,
+            "title": "Min Stock Threshold",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "warehouse_id",
+          "variant_id",
+          "batch_id",
+          "qty"
+        ],
+        "title": "ReceiveStockRequest",
+        "type": "object"
+      },
+      "InventoryStockResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "warehouse_id": {
+            "format": "uuid",
+            "title": "Warehouse Id",
+            "type": "string"
+          },
+          "warehouse_code": {
+            "title": "Warehouse Code",
+            "type": "string"
+          },
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "batch_id": {
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "available_qty": {
+            "title": "Available Qty",
+            "type": "integer"
+          },
+          "reserved_qty": {
+            "title": "Reserved Qty",
+            "type": "integer"
+          },
+          "min_stock_threshold": {
+            "title": "Min Stock Threshold",
+            "type": "integer"
+          },
+          "expiry_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Expiry Date"
+          }
+        },
+        "required": [
+          "id",
+          "warehouse_id",
+          "warehouse_code",
+          "variant_id",
+          "sku",
+          "batch_id",
+          "available_qty",
+          "reserved_qty",
+          "min_stock_threshold"
+        ],
+        "title": "InventoryStockResponse",
+        "type": "object"
+      },
+      "TelemetryPermissionRequest": {
+        "properties": {
+          "viewer_org_id": {
+            "format": "uuid",
+            "title": "Viewer Org Id",
+            "type": "string"
+          },
+          "is_active": {
+            "default": true,
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "variant_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Variant Id"
+          },
+          "batch_id": {
+            "default": "",
+            "title": "Batch Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "viewer_org_id"
+        ],
+        "title": "TelemetryPermissionRequest",
+        "type": "object"
+      },
+      "TelemetryPermissionResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "customer_org_id": {
+            "format": "uuid",
+            "title": "Customer Org Id",
+            "type": "string"
+          },
+          "viewer_org_id": {
+            "format": "uuid",
+            "title": "Viewer Org Id",
+            "type": "string"
+          },
+          "variant_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Variant Id"
+          },
+          "batch_id": {
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "customer_org_id",
+          "viewer_org_id",
+          "batch_id",
+          "is_active"
+        ],
+        "title": "TelemetryPermissionResponse",
+        "type": "object"
+      },
+      "VmiLineageItemResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "customer_org_id": {
+            "format": "uuid",
+            "title": "Customer Org Id",
+            "type": "string"
+          },
+          "customer_org_name": {
+            "title": "Customer Org Name",
+            "type": "string"
+          },
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "product_name": {
+            "title": "Product Name",
+            "type": "string"
+          },
+          "batch_id": {
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "supplied_qty": {
+            "title": "Supplied Qty",
+            "type": "integer"
+          },
+          "current_pos_qty": {
+            "title": "Current Pos Qty",
+            "type": "integer"
+          },
+          "sold_pos_qty": {
+            "title": "Sold Pos Qty",
+            "type": "integer"
+          },
+          "min_restock_threshold": {
+            "title": "Min Restock Threshold",
+            "type": "integer"
+          },
+          "traffic_light_status": {
+            "title": "Traffic Light Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "customer_org_id",
+          "customer_org_name",
+          "variant_id",
+          "sku",
+          "product_name",
+          "batch_id",
+          "supplied_qty",
+          "current_pos_qty",
+          "sold_pos_qty",
+          "min_restock_threshold",
+          "traffic_light_status"
+        ],
+        "title": "VmiLineageItemResponse",
+        "type": "object"
+      },
+      "VmiTelemetryDashboardResponse": {
+        "properties": {
+          "total_store_stock_qty": {
+            "title": "Total Store Stock Qty",
+            "type": "integer"
+          },
+          "total_sold_qty": {
+            "title": "Total Sold Qty",
+            "type": "integer"
+          },
+          "low_stock_alert_count": {
+            "title": "Low Stock Alert Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/VmiLineageItemResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "total_store_stock_qty",
+          "total_sold_qty",
+          "low_stock_alert_count",
+          "items"
+        ],
+        "title": "VmiTelemetryDashboardResponse",
+        "type": "object"
+      },
+      "OrderCartItemInput": {
+        "properties": {
+          "offer_id": {
+            "format": "uuid",
+            "title": "Offer Id",
+            "type": "string"
+          },
+          "quantity": {
+            "minimum": 1,
+            "title": "Quantity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "offer_id",
+          "quantity"
+        ],
+        "title": "OrderCartItemInput",
+        "type": "object"
+      },
+      "CreateOrderRequest": {
+        "properties": {
+          "idempotency_key": {
+            "format": "uuid",
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "is_preorder": {
+            "default": false,
+            "title": "Is Preorder",
+            "type": "boolean"
+          },
+          "delivery_address": {
+            "default": "",
+            "title": "Delivery Address",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OrderCartItemInput"
+            },
+            "minItems": 1,
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "idempotency_key",
+          "items"
+        ],
+        "title": "CreateOrderRequest",
+        "type": "object"
+      },
+      "SubOrderItemResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "product_name": {
+            "title": "Product Name",
+            "type": "string"
+          },
+          "mxik_code": {
+            "title": "Mxik Code",
+            "type": "string"
+          },
+          "barcode": {
+            "title": "Barcode",
+            "type": "string"
+          },
+          "batch_id": {
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "unit_price_tiyin": {
+            "title": "Unit Price Tiyin",
+            "type": "integer"
+          },
+          "line_total_tiyin": {
+            "title": "Line Total Tiyin",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "variant_id",
+          "sku",
+          "product_name",
+          "mxik_code",
+          "barcode",
+          "batch_id",
+          "quantity",
+          "unit_price_tiyin",
+          "line_total_tiyin"
+        ],
+        "title": "SubOrderItemResponse",
+        "type": "object"
+      },
+      "SubOrderResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "seller_org_id": {
+            "format": "uuid",
+            "title": "Seller Org Id",
+            "type": "string"
+          },
+          "seller_org_name": {
+            "title": "Seller Org Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "subtotal_amount_tiyin": {
+            "title": "Subtotal Amount Tiyin",
+            "type": "integer"
+          },
+          "waybill_qr_token": {
+            "title": "Waybill Qr Token",
+            "type": "string"
+          },
+          "is_pos_inbounded": {
+            "title": "Is Pos Inbounded",
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SubOrderItemResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "seller_org_id",
+          "seller_org_name",
+          "status",
+          "subtotal_amount_tiyin",
+          "waybill_qr_token",
+          "is_pos_inbounded",
+          "items"
+        ],
+        "title": "SubOrderResponse",
+        "type": "object"
+      },
+      "OrderResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "buyer_org_id": {
+            "format": "uuid",
+            "title": "Buyer Org Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "is_preorder": {
+            "title": "Is Preorder",
+            "type": "boolean"
+          },
+          "total_amount_tiyin": {
+            "title": "Total Amount Tiyin",
+            "type": "integer"
+          },
+          "delivery_address": {
+            "title": "Delivery Address",
+            "type": "string"
+          },
+          "idempotency_key": {
+            "format": "uuid",
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "sub_orders": {
+            "items": {
+              "$ref": "#/components/schemas/SubOrderResponse"
+            },
+            "title": "Sub Orders",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "buyer_org_id",
+          "status",
+          "is_preorder",
+          "total_amount_tiyin",
+          "delivery_address",
+          "idempotency_key",
+          "sub_orders"
+        ],
+        "title": "OrderResponse",
+        "type": "object"
+      },
+      "WalletTopupRequest": {
+        "properties": {
+          "amount_tiyin": {
+            "description": "To'ldirish summasi (tiyinlarda)",
+            "exclusiveMinimum": 0,
+            "title": "Amount Tiyin",
+            "type": "integer"
+          },
+          "idempotency_key": {
+            "format": "uuid",
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "provider": {
+            "default": "PAYME",
+            "enum": [
+              "PAYME",
+              "CLICK",
+              "BANK_TRANSFER"
+            ],
+            "title": "Provider",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount_tiyin",
+          "idempotency_key"
+        ],
+        "title": "WalletTopupRequest",
+        "type": "object"
+      },
+      "LedgerAccountResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Organization Id"
+          },
+          "account_type": {
+            "title": "Account Type",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "balance_tiyin": {
+            "title": "Balance Tiyin",
+            "type": "integer"
+          },
+          "credit_limit_tiyin": {
+            "title": "Credit Limit Tiyin",
+            "type": "integer"
+          },
+          "discount_tier_bps": {
+            "title": "Discount Tier Bps",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "account_type",
+          "currency",
+          "balance_tiyin",
+          "credit_limit_tiyin",
+          "discount_tier_bps"
+        ],
+        "title": "LedgerAccountResponse",
+        "type": "object"
+      },
+      "EscrowHoldRequest": {
+        "properties": {
+          "order_id": {
+            "format": "uuid",
+            "title": "Order Id",
+            "type": "string"
+          },
+          "idempotency_key": {
+            "format": "uuid",
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "payment_provider": {
+            "default": "PAYME",
+            "enum": [
+              "PAYME",
+              "CLICK",
+              "BANK_TRANSFER",
+              "NASIYA"
+            ],
+            "title": "Payment Provider",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id",
+          "idempotency_key"
+        ],
+        "title": "EscrowHoldRequest",
+        "type": "object"
+      },
+      "EscrowHoldResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "order_id": {
+            "format": "uuid",
+            "title": "Order Id",
+            "type": "string"
+          },
+          "sub_order_id": {
+            "format": "uuid",
+            "title": "Sub Order Id",
+            "type": "string"
+          },
+          "buyer_org_id": {
+            "format": "uuid",
+            "title": "Buyer Org Id",
+            "type": "string"
+          },
+          "seller_org_id": {
+            "format": "uuid",
+            "title": "Seller Org Id",
+            "type": "string"
+          },
+          "amount_tiyin": {
+            "title": "Amount Tiyin",
+            "type": "integer"
+          },
+          "seller_net_tiyin": {
+            "title": "Seller Net Tiyin",
+            "type": "integer"
+          },
+          "platform_fee_tiyin": {
+            "title": "Platform Fee Tiyin",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "payment_provider": {
+            "title": "Payment Provider",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "order_id",
+          "sub_order_id",
+          "buyer_org_id",
+          "seller_org_id",
+          "amount_tiyin",
+          "seller_net_tiyin",
+          "platform_fee_tiyin",
+          "status",
+          "payment_provider"
+        ],
+        "title": "EscrowHoldResponse",
+        "type": "object"
+      },
+      "EscrowHoldListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EscrowHoldResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "EscrowHoldListResponse",
+        "type": "object"
+      },
+      "EscrowReleaseRequest": {
+        "properties": {
+          "sub_order_id": {
+            "format": "uuid",
+            "title": "Sub Order Id",
+            "type": "string"
+          },
+          "idempotency_key": {
+            "format": "uuid",
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "platform_fee_bps": {
+            "default": 100,
+            "maximum": 2000,
+            "minimum": 0,
+            "title": "Platform Fee Bps",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sub_order_id",
+          "idempotency_key"
+        ],
+        "title": "EscrowReleaseRequest",
+        "type": "object"
+      },
+      "CreatePosStoreRequest": {
+        "properties": {
+          "name": {
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          },
+          "terminal_id": {
+            "maxLength": 64,
+            "minLength": 3,
+            "title": "Terminal Id",
+            "type": "string"
+          },
+          "address": {
+            "default": "",
+            "title": "Address",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "terminal_id"
+        ],
+        "title": "CreatePosStoreRequest",
+        "type": "object"
+      },
+      "PosStoreResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "organization_id": {
+            "format": "uuid",
+            "title": "Organization Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "terminal_id": {
+            "title": "Terminal Id",
+            "type": "string"
+          },
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "last_hlc_timestamp": {
+            "title": "Last Hlc Timestamp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "organization_id",
+          "name",
+          "terminal_id",
+          "address",
+          "last_hlc_timestamp"
+        ],
+        "title": "PosStoreResponse",
+        "type": "object"
+      },
+      "PosDeltaEventInput": {
+        "properties": {
+          "client_event_id": {
+            "format": "uuid",
+            "title": "Client Event Id",
+            "type": "string"
+          },
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "batch_id": {
+            "default": "DEFAULT-BATCH",
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "event_type": {
+            "enum": [
+              "INBOUND",
+              "SALE",
+              "RETURN",
+              "WRITE_OFF"
+            ],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "quantity": {
+            "exclusiveMinimum": 0,
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "unit_price_tiyin": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Unit Price Tiyin",
+            "type": "integer"
+          },
+          "hlc_timestamp": {
+            "description": "Format: <wall_ms>:<counter>:<node_id>",
+            "title": "Hlc Timestamp",
+            "type": "string"
+          },
+          "waybill_qr_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Waybill Qr Token"
+          }
+        },
+        "required": [
+          "client_event_id",
+          "variant_id",
+          "event_type",
+          "quantity",
+          "hlc_timestamp"
+        ],
+        "title": "PosDeltaEventInput",
+        "type": "object"
+      },
+      "PosDeltaSyncBatchRequest": {
+        "properties": {
+          "store_id": {
+            "format": "uuid",
+            "title": "Store Id",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/PosDeltaEventInput"
+            },
+            "minItems": 1,
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": [
+          "store_id",
+          "events"
+        ],
+        "title": "PosDeltaSyncBatchRequest",
+        "type": "object"
+      },
+      "PosDeltaSyncBatchResponse": {
+        "properties": {
+          "store_id": {
+            "format": "uuid",
+            "title": "Store Id",
+            "type": "string"
+          },
+          "applied_events": {
+            "title": "Applied Events",
+            "type": "integer"
+          },
+          "skipped_duplicates": {
+            "title": "Skipped Duplicates",
+            "type": "integer"
+          },
+          "conflicts": {
+            "title": "Conflicts",
+            "type": "integer"
+          },
+          "last_hlc_timestamp": {
+            "title": "Last Hlc Timestamp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_id",
+          "applied_events",
+          "skipped_duplicates",
+          "conflicts",
+          "last_hlc_timestamp"
+        ],
+        "title": "PosDeltaSyncBatchResponse",
+        "type": "object"
+      },
+      "OneClickWaybillInboundRequest": {
+        "properties": {
+          "store_id": {
+            "format": "uuid",
+            "title": "Store Id",
+            "type": "string"
+          },
+          "waybill_qr_token": {
+            "maxLength": 128,
+            "minLength": 4,
+            "title": "Waybill Qr Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_id",
+          "waybill_qr_token"
+        ],
+        "title": "OneClickWaybillInboundRequest",
+        "type": "object"
+      },
+      "OneClickWaybillInboundResponse": {
+        "properties": {
+          "store_id": {
+            "format": "uuid",
+            "title": "Store Id",
+            "type": "string"
+          },
+          "sub_order_id": {
+            "format": "uuid",
+            "title": "Sub Order Id",
+            "type": "string"
+          },
+          "waybill_qr_token": {
+            "title": "Waybill Qr Token",
+            "type": "string"
+          },
+          "inbounded_items_count": {
+            "title": "Inbounded Items Count",
+            "type": "integer"
+          },
+          "total_waybill_items": {
+            "title": "Total Waybill Items",
+            "type": "integer"
+          },
+          "is_pos_inbounded": {
+            "title": "Is Pos Inbounded",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "store_id",
+          "sub_order_id",
+          "waybill_qr_token",
+          "inbounded_items_count",
+          "total_waybill_items",
+          "is_pos_inbounded"
+        ],
+        "title": "OneClickWaybillInboundResponse",
+        "type": "object"
+      },
+      "GenerateDidoxEhfRequest": {
+        "properties": {
+          "sub_order_id": {
+            "format": "uuid",
+            "title": "Sub Order Id",
+            "type": "string"
+          },
+          "pkcs7_signature": {
+            "description": "Sotuvchi E-Imzo PKCS#7 imzosi",
+            "minLength": 12,
+            "title": "Pkcs7 Signature",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sub_order_id",
+          "pkcs7_signature"
+        ],
+        "title": "GenerateDidoxEhfRequest",
+        "type": "object"
+      },
+      "EhfDocumentResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "sub_order_id": {
+            "format": "uuid",
+            "title": "Sub Order Id",
+            "type": "string"
+          },
+          "didox_doc_id": {
+            "title": "Didox Doc Id",
+            "type": "string"
+          },
+          "seller_stir": {
+            "title": "Seller Stir",
+            "type": "string"
+          },
+          "buyer_stir": {
+            "title": "Buyer Stir",
+            "type": "string"
+          },
+          "total_amount_tiyin": {
+            "title": "Total Amount Tiyin",
+            "type": "integer"
+          },
+          "certificate_serial": {
+            "title": "Certificate Serial",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sub_order_id",
+          "didox_doc_id",
+          "seller_stir",
+          "buyer_stir",
+          "total_amount_tiyin",
+          "certificate_serial",
+          "status"
+        ],
+        "title": "EhfDocumentResponse",
+        "type": "object"
+      },
+      "RegisterOfdReceiptRequest": {
+        "properties": {
+          "store_id": {
+            "format": "uuid",
+            "title": "Store Id",
+            "type": "string"
+          },
+          "client_sale_id": {
+            "format": "uuid",
+            "title": "Client Sale Id",
+            "type": "string"
+          },
+          "receipt_seq": {
+            "minimum": 1,
+            "title": "Receipt Seq",
+            "type": "integer"
+          },
+          "payment_method": {
+            "default": "CASH",
+            "enum": [
+              "CASH",
+              "CARD",
+              "MIXED",
+              "NASIYA"
+            ],
+            "title": "Payment Method",
+            "type": "string"
+          },
+          "total_amount_tiyin": {
+            "exclusiveMinimum": 0,
+            "title": "Total Amount Tiyin",
+            "type": "integer"
+          },
+          "mxik_codes": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Mxik Codes",
+            "type": "array"
+          },
+          "hlc_timestamp": {
+            "title": "Hlc Timestamp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_id",
+          "client_sale_id",
+          "receipt_seq",
+          "total_amount_tiyin",
+          "mxik_codes",
+          "hlc_timestamp"
+        ],
+        "title": "RegisterOfdReceiptRequest",
+        "type": "object"
+      },
+      "OfdFiscalReceiptResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "pos_sale_id": {
+            "format": "uuid",
+            "title": "Pos Sale Id",
+            "type": "string"
+          },
+          "terminal_id": {
+            "title": "Terminal Id",
+            "type": "string"
+          },
+          "receipt_seq": {
+            "title": "Receipt Seq",
+            "type": "integer"
+          },
+          "total_amount_tiyin": {
+            "title": "Total Amount Tiyin",
+            "type": "integer"
+          },
+          "fiscal_sign": {
+            "title": "Fiscal Sign",
+            "type": "string"
+          },
+          "qr_code_url": {
+            "title": "Qr Code Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "pos_sale_id",
+          "terminal_id",
+          "receipt_seq",
+          "total_amount_tiyin",
+          "fiscal_sign",
+          "qr_code_url"
+        ],
+        "title": "OfdFiscalReceiptResponse",
+        "type": "object"
+      },
+      "DbazarConnectInboundRequest": {
+        "properties": {
+          "external_system": {
+            "enum": [
+              "1C_ROZNITSA",
+              "BILLZ",
+              "REGOS",
+              "F_APTEKA"
+            ],
+            "title": "External System",
+            "type": "string"
+          },
+          "terminal_id": {
+            "maxLength": 64,
+            "minLength": 3,
+            "title": "Terminal Id",
+            "type": "string"
+          },
+          "waybill_qr_token": {
+            "maxLength": 128,
+            "minLength": 4,
+            "title": "Waybill Qr Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "external_system",
+          "terminal_id",
+          "waybill_qr_token"
+        ],
+        "title": "DbazarConnectInboundRequest",
+        "type": "object"
+      },
+      "DbazarConnectInboundResponse": {
+        "properties": {
+          "external_system": {
+            "title": "External System",
+            "type": "string"
+          },
+          "terminal_id": {
+            "title": "Terminal Id",
+            "type": "string"
+          },
+          "store_id": {
+            "format": "uuid",
+            "title": "Store Id",
+            "type": "string"
+          },
+          "sub_order_id": {
+            "format": "uuid",
+            "title": "Sub Order Id",
+            "type": "string"
+          },
+          "waybill_qr_token": {
+            "title": "Waybill Qr Token",
+            "type": "string"
+          },
+          "inbounded_items_count": {
+            "title": "Inbounded Items Count",
+            "type": "integer"
+          },
+          "total_waybill_items": {
+            "title": "Total Waybill Items",
+            "type": "integer"
+          },
+          "is_pos_inbounded": {
+            "title": "Is Pos Inbounded",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "external_system",
+          "terminal_id",
+          "store_id",
+          "sub_order_id",
+          "waybill_qr_token",
+          "inbounded_items_count",
+          "total_waybill_items",
+          "is_pos_inbounded"
+        ],
+        "title": "DbazarConnectInboundResponse",
+        "type": "object"
+      },
+      "AssignShipmentRequest": {
+        "properties": {
+          "sub_order_id": {
+            "format": "uuid",
+            "title": "Sub Order Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sub_order_id"
+        ],
+        "title": "AssignShipmentRequest",
+        "type": "object"
+      },
+      "ShipmentResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "sub_order_id": {
+            "format": "uuid",
+            "title": "Sub Order Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "pod_otp_code": {
+            "title": "Pod Otp Code",
+            "type": "string"
+          },
+          "current_lat_microdeg": {
+            "title": "Current Lat Microdeg",
+            "type": "integer"
+          },
+          "current_lng_microdeg": {
+            "title": "Current Lng Microdeg",
+            "type": "integer"
+          },
+          "pod_photo_url": {
+            "title": "Pod Photo Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sub_order_id",
+          "status",
+          "pod_otp_code",
+          "current_lat_microdeg",
+          "current_lng_microdeg",
+          "pod_photo_url"
+        ],
+        "title": "ShipmentResponse",
+        "type": "object"
+      },
+      "UpdateShipmentGpsRequest": {
+        "properties": {
+          "lat_microdeg": {
+            "description": "Kenglik mikrogradusda (lat * 1_000_000)",
+            "title": "Lat Microdeg",
+            "type": "integer"
+          },
+          "lng_microdeg": {
+            "description": "Uzunlik mikrogradusda (lng * 1_000_000)",
+            "title": "Lng Microdeg",
+            "type": "integer"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "PICKED_UP",
+                  "IN_TRANSIT"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          }
+        },
+        "required": [
+          "lat_microdeg",
+          "lng_microdeg"
+        ],
+        "title": "UpdateShipmentGpsRequest",
+        "type": "object"
+      },
+      "ConfirmPodRequest": {
+        "properties": {
+          "pod_otp_code": {
+            "maxLength": 6,
+            "minLength": 6,
+            "title": "Pod Otp Code",
+            "type": "string"
+          },
+          "release_idempotency_key": {
+            "format": "uuid",
+            "title": "Release Idempotency Key",
+            "type": "string"
+          },
+          "pod_photo_url": {
+            "default": "",
+            "title": "Pod Photo Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pod_otp_code",
+          "release_idempotency_key"
+        ],
+        "title": "ConfirmPodRequest",
+        "type": "object"
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "catalog": {
+    "products": "Tovarlar",
+    "addToCart": "Savatga",
+    "priceComparison": "Narxlarni solishtirish",
+    "details": "Batafsil"
+  },
+  "inventory": {
+    "storeStock": "Do'kondagi qoldiq",
+    "dailySales": "Kunlik sotuv",
+    "lowStock": "Tez tugaydigan tovarlar",
+    "oneClickInbound": "1 tugmada kirim"
+  },
+  "billing": {
+    "safePayment": "Xavfsiz to'lov",
+    "creditLimit": "Nasiya",
+    "pay": "To'lash"
+  },
+  "logistics": {
+    "pickedUp": "Ombordan oldim",
+    "inTransit": "Yo'lga chiqdim",
+    "delivered": "Topshirdim"
+  },
+  "offline": {
+    "posOfflineBanner": "Internet uzildi — kassa oflayn ishlashda davom etmoqda"
+  }
+}

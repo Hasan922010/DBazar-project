@@ -1,0 +1,11 @@
+{
+  "name": "@dbazar/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "generate": "openapi-typescript ./openapi.yaml -o ./src/schema.d.ts"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.4.0"
+  }
+}
