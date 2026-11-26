@@ -1,0 +1,91 @@
+/*
+ * DBazar Minimalist UX/UI Design System Foundation (`@dbazar/ui-tokens`)
+ * Follows `/ui-minimalist-design` and `agency-ux-architect`:
+ * 1. Clean high-contrast palette (#FFFFFF / #F8FAFC background, #0F172A text, 1 brand accent #2563EB)
+ * 2. 3 semantic traffic-light colors (Green: tayyor/yetarli, Yellow: yo'lda/kamaydi, Red: tugamoqda/qarz)
+ * 3. Touch targets: 48px+ mobile/web, 56px+ POS cashier buttons
+ * 4. Prices & totals in `tabular-nums`
+ * 5. Light / Dark / System theme support
+ */
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-surface: #F8FAFC;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --border-subtle: #E2E8F0;
+
+  --brand-primary: #2563EB;
+  --brand-primary-hover: #1D4ED8;
+  --brand-on-primary: #FFFFFF;
+
+  --status-ready: #16A34A;
+  --status-ready-bg: #DCFCE7;
+  --status-pending: #D97706;
+  --status-pending-bg: #FEF3C7;
+  --status-alert: #DC2626;
+  --status-alert-bg: #FEE2E2;
+
+  --touch-target-mobile: 48px;
+  --touch-target-pos: 56px;
+
+  --space-2: 0.5rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0F172A;
+  --bg-surface: #1E293B;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --border-subtle: #334155;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #0F172A;
+    --bg-surface: #1E293B;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --border-subtle: #334155;
+  }
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-primary-cta {
+  min-height: var(--touch-target-mobile);
+  padding: 0 var(--space-6);
+  background-color: var(--brand-primary);
+  color: var(--brand-on-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-pos-pay {
+  min-height: var(--touch-target-pos);
+  padding: 0 var(--space-8);
+  background-color: var(--status-ready);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+}
