@@ -10,7 +10,7 @@ import uuid
 from datetime import date
 from typing import List, Optional
 
-from django.db import transaction
+from django.db import models, transaction
 from django.db.models import Q
 from django.utils import timezone
 
@@ -142,6 +142,73 @@ def reserve_seller_stock_fefo(
 
 
 @transaction.atomic
+def commit_reserved_seller_stock(
+    *,
+    seller_org: Organization,
+    variant_id: uuid.UUID,
+    batch_id: str,
+    qty: int,
+) -> None:
+    """
+    Releases `reserved_qty` when an order is delivered so reserved stock does not grow forever.
+    """
+    if batch_id == "PREORDER-BATCH" or qty <= 0:
+        return
+    stocks = list(
+        InventoryStock.objects.select_for_update()
+        .filter(
+            warehouse__organization=seller_org,
+            variant_id=variant_id,
+            batch_id=batch_id,
+            reserved_qty__gt=0,
+        )
+        .order_by("updated_at")
+    )
+    remaining = qty
+    for stock in stocks:
+        if remaining <= 0:
+            break
+        deduct = min(stock.reserved_qty, remaining)
+        stock.reserved_qty -= deduct
+        stock.save(update_fields=["reserved_qty", "updated_at"])
+        remaining -= deduct
+
+
+@transaction.atomic
+def release_reserved_seller_stock(
+    *,
+    seller_org: Organization,
+    variant_id: uuid.UUID,
+    batch_id: str,
+    qty: int,
+) -> None:
+    """
+    Returns `reserved_qty` back to `available_qty` when a PENDING order is cancelled.
+    """
+    if batch_id == "PREORDER-BATCH" or qty <= 0:
+        return
+    stocks = list(
+        InventoryStock.objects.select_for_update()
+        .filter(
+            warehouse__organization=seller_org,
+            variant_id=variant_id,
+            batch_id=batch_id,
+            reserved_qty__gt=0,
+        )
+        .order_by("updated_at")
+    )
+    remaining = qty
+    for stock in stocks:
+        if remaining <= 0:
+            break
+        restore = min(stock.reserved_qty, remaining)
+        stock.reserved_qty -= restore
+        stock.available_qty += restore
+        stock.save(update_fields=["available_qty", "reserved_qty", "updated_at"])
+        remaining -= restore
+
+
+@transaction.atomic
 def record_supply_lineage(
     *,
     variant: ProductVariant,
@@ -247,3 +314,70 @@ def get_isolated_vmi_telemetry(
         .filter(lineage_filter)
         .order_by("current_pos_qty")
     )
+
+
+def get_smart_auto_restock_recommendations(customer_org: Organization) -> List[dict]:
+    """
+    Phase 4 Smart Auto-Restock:
+    Finds store SKUs where `current_pos_qty <= min_restock_threshold` and computes
+    recommended restock quantities based on sales velocity (`sold_pos_qty`) and threshold.
+    """
+    low_lineages = list(
+        InventoryLineage.objects.select_related("variant", "variant__product")
+        .filter(customer_org=customer_org, current_pos_qty__lte=models.F("min_restock_threshold"))
+        .order_by("current_pos_qty")
+    )
+    results = []
+    for ln in low_lineages:
+        recommended_qty = max(ln.min_restock_threshold * 4, ln.sold_pos_qty // 2, 20)
+        results.append(
+            {
+                "lineage_id": ln.id,
+                "variant_id": ln.variant_id,
+                "sku": ln.variant.sku,
+                "product_name": f"{ln.variant.product.name} ({ln.variant.name})",
+                "current_pos_qty": ln.current_pos_qty,
+                "min_restock_threshold": ln.min_restock_threshold,
+                "recommended_order_qty": recommended_qty,
+                "supplier_org_id": ln.intermediary_org_id or ln.manufacturer_org_id,
+            }
+        )
+    return results
+
+
+def calculate_ai_regional_demand_forecast(viewer_org: Organization) -> List[dict]:
+    """
+    Phase 5 AI Demand Forecast:
+    Predicts next 30-day regional demand from real-time VMI POS sales (`sold_pos_qty`)
+    and supply turnover for SKUs belonging to `viewer_org`.
+    """
+    lineages = get_isolated_vmi_telemetry(viewer_org=viewer_org)
+    grouped: dict[tuple[uuid.UUID, str], dict] = {}
+    for ln in lineages:
+        region = ln.customer_org.region
+        key = (ln.variant_id, region)
+        entry = grouped.get(key)
+        if entry is None:
+            entry = {
+                "variant_id": ln.variant_id,
+                "sku": ln.variant.sku,
+                "product_name": f"{ln.variant.product.name} ({ln.variant.name})",
+                "region": region,
+                "historical_sold_qty": 0,
+            }
+            grouped[key] = entry
+        entry["historical_sold_qty"] += ln.sold_pos_qty
+
+    forecasts = []
+    for item in grouped.values():
+        hist = item["historical_sold_qty"]
+        # Seasonal growth multiplier (1.25x of observed POS velocity, minimum baseline 50 units)
+        forecast_30d = max(int(hist * 1.25), 50)
+        forecasts.append(
+            {
+                **item,
+                "forecast_next_30d_qty": forecast_30d,
+                "confidence_level": "HIGH" if hist >= 100 else "MEDIUM",
+            }
+        )
+    return forecasts

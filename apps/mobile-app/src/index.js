@@ -1,6 +1,9 @@
 /**
  * DBazar Minimalist Mobile Application (`apps/mobile-app`)
- * Strict maximum 4 Bottom Tabs, 48px+ buttons, Buyer/Agent & Driver GPS/POD modes.
+ * Redesigned single-handed mobile interface:
+ * - Strict maximum 4 Bottom Tabs ("Tovarlar", "Savat", "Buyurtmalar", "Yetkazish")
+ * - 48px+ touch targets
+ * - Buyer/Sales Agent mode & Driver Live GPS + 1-Button POD mode
  */
 import crypto from "node:crypto";
 import {
@@ -10,6 +13,7 @@ import {
 } from "../../../packages/ui-tokens/src/index.js";
 import {
   calculateTieredPriceTiyin,
+  escapeHtml,
   formatTiyinUzs,
 } from "../../../packages/shared-utils/src/index.js";
 
@@ -140,8 +144,8 @@ export function renderMobileScreenHtml(app) {
   const tabsHtml = app
     .getBottomTabs()
     .map(
-      (t) =>
-        `<button type="button" class="bottom-tab" style="min-height:${designTokens.spacing.minTouchTargetMobilePx}px">${t}</button>`
+      (t, idx) =>
+        `<button type="button" class="bottom-tab ${(app.mode === "DRIVER" && idx === 3) || (app.mode !== "DRIVER" && idx === 0) ? "active" : ""}" style="min-height:${designTokens.spacing.minTouchTargetMobilePx}px">${escapeHtml(t)}</button>`
     )
     .join("");
 
@@ -149,28 +153,70 @@ export function renderMobileScreenHtml(app) {
     app.mode === "DRIVER" && app.activeDelivery
       ? `
         <section class="driver-screen" aria-label="Yetkazib berish">
-          <h2>${app.activeDelivery.customerName}</h2>
-          <p>${app.activeDelivery.address}</p>
-          <a href="tel:${app.activeDelivery.customerPhone}" class="btn-call" style="min-height:${designTokens.spacing.minTouchTargetMobilePx}px">
-            Mijozga qo'ng'iroq qilish
-          </a>
-          <button type="button" class="btn-primary-cta" data-primary-cta="true" style="min-height:${designTokens.spacing.minTouchTargetMobilePx}px">
-            ${app.getDriverPrimaryButtonLabel()}
+          <div class="mobile-status-bar">
+            <span class="status-badge yellow"><i class="dot yellow"></i> Jonli GPS yoqilgan</span>
+            <span class="tabular-nums">41.3111° N, 69.2406° E</span>
+          </div>
+          <div class="driver-map-card">
+            <div class="map-route-line"></div>
+            <div class="map-pin origin">Ombor</div>
+            <div class="map-pin destination">Mijoz (2.4 km)</div>
+          </div>
+          <div class="driver-customer-card">
+            <span class="drawer-eyebrow">Joriy manzil</span>
+            <h2>${escapeHtml(app.activeDelivery.customerName)}</h2>
+            <p>${escapeHtml(app.activeDelivery.address)}</p>
+            <a href="tel:${escapeHtml(app.activeDelivery.customerPhone)}" class="btn-secondary btn-call" style="min-height:${designTokens.spacing.minTouchTargetMobilePx}px">
+              Mijozga qo'ng'iroq qilish (${escapeHtml(app.activeDelivery.customerPhone)})
+            </a>
+          </div>
+          <div class="driver-pod-box">
+            <label for="mobile-otp-input">Mijozdagi 6 xonali tasdiqlash kodi:</label>
+            <input id="mobile-otp-input" type="text" maxlength="6" value="482910" class="tabular-nums" />
+          </div>
+          <button type="button" class="btn-primary-cta driver-main-cta" data-primary-cta="true" data-action="driver-step" style="min-height:${designTokens.spacing.minTouchTargetPosPx}px">
+            ${escapeHtml(app.getDriverPrimaryButtonLabel())}
           </button>
         </section>
       `
       : `
-        <section class="buyer-screen" aria-label="${uzDictionary.catalog.products}">
+        <section class="buyer-screen" aria-label="${escapeHtml(uzDictionary.catalog.products)}">
+          <div class="mobile-header">
+            <strong>Baraka Minimarket</strong>
+            <span class="status-badge green"><i class="dot green"></i> Nasiya: 5 000 000 so'm</span>
+          </div>
           <input type="search" placeholder="Tovar qidirish yoki shtrix-kod skaneri" />
-          <div class="cart-summary tabular-nums">${formatTiyinUzs(app.getCartTotalTiyin())}</div>
-          <button type="button" class="btn-primary-cta" data-primary-cta="true" style="min-height:${designTokens.spacing.minTouchTargetMobilePx}px">
-            ${uzDictionary.billing.safePayment}
-          </button>
+          <div class="mobile-product-list">
+            <article class="mobile-product-card">
+              <div>
+                <strong>Kungaboqar yog'i Oliya (1L)</strong>
+                <p class="tabular-nums">50+ donada: 16 500 so'm</p>
+              </div>
+              <button type="button" class="btn-secondary mobile-plus-btn" data-action="mobile-add" data-price="1650000" style="min-height:${designTokens.spacing.minTouchTargetMobilePx}px;min-width:${designTokens.spacing.minTouchTargetMobilePx}px">+</button>
+            </article>
+            <article class="mobile-product-card">
+              <div>
+                <strong>Birinchi navli bug'doy uni (50 kg)</strong>
+                <p class="tabular-nums">10+ qopda: 210 000 so'm</p>
+              </div>
+              <button type="button" class="btn-secondary mobile-plus-btn" data-action="mobile-add" data-price="21000000" style="min-height:${designTokens.spacing.minTouchTargetMobilePx}px;min-width:${designTokens.spacing.minTouchTargetMobilePx}px">+</button>
+            </article>
+          </div>
+          <div class="mobile-checkout-bar">
+            <div>
+              <span>Jami savatda:</span>
+              <div class="cart-summary tabular-nums" id="mobile-cart-total">${escapeHtml(formatTiyinUzs(app.getCartTotalTiyin()))}</div>
+            </div>
+            <button type="button" class="btn-primary-cta" data-primary-cta="true" style="min-height:${designTokens.spacing.minTouchTargetMobilePx}px">
+              ${escapeHtml(uzDictionary.billing.safePayment)}
+            </button>
+          </div>
         </section>
       `;
 
   const html = `
     <div class="mobile-shell">
+      <div class="mobile-notch"></div>
       <main>${bodyHtml}</main>
       <nav class="bottom-tab-bar" aria-label="Pastki menyu">${tabsHtml}</nav>
     </div>

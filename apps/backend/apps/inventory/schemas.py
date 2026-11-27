@@ -83,3 +83,33 @@ class VmiTelemetryDashboardResponse(BaseModel):
     total_sold_qty: int
     low_stock_alert_count: int
     items: List[VmiLineageItemResponse]
+
+
+class AutoRestockDraftItemResponse(BaseModel):
+    lineage_id: uuid.UUID
+    variant_id: uuid.UUID
+    sku: str
+    product_name: str
+    current_pos_qty: int
+    min_restock_threshold: int
+    recommended_order_qty: int
+    supplier_org_id: Optional[uuid.UUID] = None
+
+
+class AutoRestockDraftListResponse(BaseModel):
+    draft_count: int
+    items: List[AutoRestockDraftItemResponse]
+
+
+class DemandForecastItemResponse(BaseModel):
+    variant_id: uuid.UUID
+    sku: str
+    product_name: str
+    region: str
+    historical_sold_qty: int
+    forecast_next_30d_qty: int
+    confidence_level: str
+
+
+class DemandForecastListResponse(BaseModel):
+    items: List[DemandForecastItemResponse]

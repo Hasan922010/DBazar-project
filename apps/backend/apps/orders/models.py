@@ -153,3 +153,88 @@ class SubOrderItem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.variant.sku} x{self.quantity} ({self.line_total_tiyin} tiyin)"
+
+
+class RfqStatus(models.TextChoices):
+    OPEN = "OPEN", "Takliflar qabul qilinmoqda"
+    AWARDED = "AWARDED", "G'olib aniqlandi (Buyurtma yaratildi)"
+    CLOSED = "CLOSED", "Yopilgan"
+
+
+class RfqTender(models.Model):
+    """
+    Phase 5 B2B Sealed-Bid Tender (RFQ) for large wholesale buyers.
+    All monetary fields strictly BigIntegerField in tiyin.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    buyer_org = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="rfq_tenders",
+    )
+    variant = models.ForeignKey(
+        ProductVariant,
+        on_delete=models.PROTECT,
+        related_name="rfq_tenders",
+    )
+    target_quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    max_unit_price_tiyin = models.BigIntegerField(validators=[MinValueValidator(1)])
+    region = models.CharField(max_length=100, default="Toshkent")
+    status = models.CharField(
+        max_length=16,
+        choices=RfqStatus.choices,
+        default=RfqStatus.OPEN,
+    )
+    awarded_order = models.ForeignKey(
+        Order,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="awarded_from_rfq",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "orders_rfq_tenders"
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(max_unit_price_tiyin__gt=0),
+                name="chk_rfq_max_unit_price_positive",
+            ),
+        ]
+
+
+class RfqBid(models.Model):
+    """
+    Sealed seller price bid on an RfqTender.
+    Isolated so competing sellers cannot see each other's bids.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tender = models.ForeignKey(
+        RfqTender,
+        on_delete=models.CASCADE,
+        related_name="bids",
+    )
+    seller_org = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="rfq_bids",
+    )
+    proposed_unit_price_tiyin = models.BigIntegerField(validators=[MinValueValidator(1)])
+    is_winner = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "orders_rfq_bids"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tender", "seller_org"],
+                name="uniq_rfq_bid_tender_seller",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(proposed_unit_price_tiyin__gt=0),
+                name="chk_rfq_bid_price_positive",
+            ),
+        ]

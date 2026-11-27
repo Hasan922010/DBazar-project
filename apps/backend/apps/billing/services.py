@@ -10,7 +10,7 @@ from __future__ import annotations
 import uuid
 from typing import List, Optional
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Sum
 from django.utils import timezone
 
@@ -24,6 +24,7 @@ from apps.billing.models import (
 )
 from apps.iam.models import Organization, OrganizationRole
 from apps.inventory.models import InventoryLineage, PosTelemetryPermission
+from apps.inventory.services import commit_reserved_seller_stock
 from apps.orders.models import Order, OrderStatus, SubOrder
 from config.api_router import ApiError
 
@@ -34,13 +35,28 @@ def get_or_create_ledger_account(
     organization: Optional[Organization],
     account_type: str,
 ) -> LedgerAccount:
-    acc, _ = LedgerAccount.objects.get_or_create(
+    acc = LedgerAccount.objects.filter(
         organization=organization,
         account_type=account_type,
         currency="UZS",
-        defaults={"balance_tiyin": 0, "credit_limit_tiyin": 0},
-    )
-    return acc
+    ).first()
+    if acc is not None:
+        return acc
+    try:
+        with transaction.atomic():
+            acc, _ = LedgerAccount.objects.get_or_create(
+                organization=organization,
+                account_type=account_type,
+                currency="UZS",
+                defaults={"balance_tiyin": 0, "credit_limit_tiyin": 0},
+            )
+            return acc
+    except IntegrityError:
+        return LedgerAccount.objects.get(
+            organization=organization,
+            account_type=account_type,
+            currency="UZS",
+        )
 
 
 @transaction.atomic
@@ -224,6 +240,7 @@ def release_escrow_split_settlement(
     sub_order = (
         SubOrder.objects.select_for_update()
         .select_related("order", "order__buyer_org", "seller_org")
+        .prefetch_related("items")
         .filter(id=sub_order_id)
         .first()
     )
@@ -280,6 +297,14 @@ def release_escrow_split_settlement(
 
     sub_order.status = OrderStatus.DELIVERED
     sub_order.save(update_fields=["status", "updated_at"])
+
+    for item in sub_order.items.all():
+        commit_reserved_seller_stock(
+            seller_org=sub_order.seller_org,
+            variant_id=item.variant_id,
+            batch_id=item.batch_id,
+            qty=item.quantity,
+        )
 
     # Check if all sub_orders of the parent order are delivered
     if not sub_order.order.sub_orders.exclude(status=OrderStatus.DELIVERED).exists():

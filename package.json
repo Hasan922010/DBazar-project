@@ -5,7 +5,7 @@
   "type": "module",
   "workspaces": [
     "packages/*",
-    " packages/mocks-and-emulators/*",
+    "packages/mocks-and-emulators/*",
     "apps/web-portal",
     "apps/pos-client",
     "apps/mobile-app"

@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbazar-backend-asgi
+  labels:
+    app: dbazar-backend
+    component: asgi
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: dbazar-backend
+      component: asgi
+  template:
+    metadata:
+      labels:
+        app: dbazar-backend
+        component: asgi
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/dbazar/backend:latest
+          command: ["gunicorn", "config.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "--workers", "4"]
+          ports:
+            - containerPort: 8000
+          env:
+            - name: USE_SQLITE
+              value: "0"
+            - name: DB_ENGINE
+              value: "postgresql"
+          readinessProbe:
+            httpGet:
+              path: /healthz/
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbazar-celery-worker
+  labels:
+    app: dbazar-backend
+    component: celery-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dbazar-backend
+      component: celery-worker
+  template:
+    metadata:
+      labels:
+        app: dbazar-backend
+        component: celery-worker
+    spec:
+      containers:
+        - name: celery
+          image: ghcr.io/dbazar/backend:latest
+          command: ["celery", "-A", "config", "worker", "-l", "INFO", "--concurrency", "4"]
+          env:
+            - name: USE_SQLITE
+              value: "0"
+            - name: CELERY_TASK_ALWAYS_EAGER
+              value: "false"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dbazar-backend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dbazar-backend-asgi
+  minReplicas: 4
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

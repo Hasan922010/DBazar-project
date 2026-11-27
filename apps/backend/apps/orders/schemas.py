@@ -4,8 +4,8 @@ Pydantic v2 Contracts for Orders & Order Splitting module.
 from __future__ import annotations
 
 import uuid
-from typing import List
-from pydantic import BaseModel, Field
+from typing import List, Optional
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class OrderCartItemInput(BaseModel):
@@ -53,3 +53,45 @@ class OrderResponse(BaseModel):
     delivery_address: str
     idempotency_key: uuid.UUID
     sub_orders: List[SubOrderResponse]
+
+
+class OrderListResponse(BaseModel):
+    items: List[OrderResponse]
+
+
+class CreateRfqTenderRequest(BaseModel):
+    variant_id: uuid.UUID
+    target_quantity: int = Field(..., ge=1)
+    max_unit_price_tiyin: int = Field(..., gt=0)
+    region: str = "Toshkent"
+
+
+class SubmitRfqBidRequest(BaseModel):
+    proposed_unit_price_tiyin: int = Field(..., gt=0)
+
+
+class RfqBidResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    tender_id: uuid.UUID
+    seller_org_id: uuid.UUID
+    proposed_unit_price_tiyin: int
+    is_winner: bool
+
+
+class RfqTenderResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    buyer_org_id: uuid.UUID
+    variant_id: uuid.UUID
+    target_quantity: int
+    max_unit_price_tiyin: int
+    region: str
+    status: str
+    awarded_order_id: Optional[uuid.UUID] = None
+
+
+class RfqTenderListResponse(BaseModel):
+    items: List[RfqTenderResponse]

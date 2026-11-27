@@ -203,6 +203,36 @@ export interface VmiTelemetryDashboardResponse {
   items: VmiLineageItemResponse[];
 }
 
+export interface AutoRestockDraftItemResponse {
+  lineage_id: string;
+  variant_id: string;
+  sku: string;
+  product_name: string;
+  current_pos_qty: number;
+  min_restock_threshold: number;
+  recommended_order_qty: number;
+  supplier_org_id?: string | null;
+}
+
+export interface AutoRestockDraftListResponse {
+  draft_count: number;
+  items: AutoRestockDraftItemResponse[];
+}
+
+export interface DemandForecastItemResponse {
+  variant_id: string;
+  sku: string;
+  product_name: string;
+  region: string;
+  historical_sold_qty: number;
+  forecast_next_30d_qty: number;
+  confidence_level: string;
+}
+
+export interface DemandForecastListResponse {
+  items: DemandForecastItemResponse[];
+}
+
 export interface OrderCartItemInput {
   offer_id: string;
   quantity: number;
@@ -248,6 +278,44 @@ export interface OrderResponse {
   delivery_address: string;
   idempotency_key: string;
   sub_orders: SubOrderResponse[];
+}
+
+export interface OrderListResponse {
+  items: OrderResponse[];
+}
+
+export interface CreateRfqTenderRequest {
+  variant_id: string;
+  target_quantity: number;
+  max_unit_price_tiyin: number;
+  region?: string;
+}
+
+export interface RfqTenderResponse {
+  id: string;
+  buyer_org_id: string;
+  variant_id: string;
+  target_quantity: number;
+  max_unit_price_tiyin: number;
+  region: string;
+  status: string;
+  awarded_order_id?: string | null;
+}
+
+export interface RfqTenderListResponse {
+  items: RfqTenderResponse[];
+}
+
+export interface SubmitRfqBidRequest {
+  proposed_unit_price_tiyin: number;
+}
+
+export interface RfqBidResponse {
+  id: string;
+  tender_id: string;
+  seller_org_id: string;
+  proposed_unit_price_tiyin: number;
+  is_winner: boolean;
 }
 
 export interface WalletTopupRequest {
@@ -498,17 +566,65 @@ export interface ApiOperations {
     request: void;
     response: VmiTelemetryDashboardResponse;
   };
+  getSmartAutoRestockDrafts: {
+    method: "GET";
+    path: "/api/v1/inventory/auto-restock";
+    request: void;
+    response: AutoRestockDraftListResponse;
+  };
+  getAiRegionalDemandForecast: {
+    method: "GET";
+    path: "/api/v1/inventory/demand-forecast";
+    request: void;
+    response: DemandForecastListResponse;
+  };
   createB2BOrder: {
     method: "POST";
     path: "/api/v1/orders";
     request: CreateOrderRequest;
     response: OrderResponse;
   };
+  listB2BOrders: {
+    method: "GET";
+    path: "/api/v1/orders";
+    request: void;
+    response: OrderListResponse;
+  };
   getSubOrderWaybillByQr: {
     method: "GET";
     path: "/api/v1/orders/waybill/{waybill_qr_token}";
     request: void;
     response: SubOrderResponse;
+  };
+  cancelPendingB2BOrder: {
+    method: "POST";
+    path: "/api/v1/orders/{order_id}/cancel";
+    request: void;
+    response: OrderResponse;
+  };
+  createRfqTender: {
+    method: "POST";
+    path: "/api/v1/orders/rfq/tenders";
+    request: CreateRfqTenderRequest;
+    response: RfqTenderResponse;
+  };
+  listRfqTenders: {
+    method: "GET";
+    path: "/api/v1/orders/rfq/tenders";
+    request: void;
+    response: RfqTenderListResponse;
+  };
+  submitSealedRfqBid: {
+    method: "POST";
+    path: "/api/v1/orders/rfq/tenders/{tender_id}/bids";
+    request: SubmitRfqBidRequest;
+    response: RfqBidResponse;
+  };
+  awardRfqTenderBestBid: {
+    method: "POST";
+    path: "/api/v1/orders/rfq/tenders/{tender_id}/award";
+    request: void;
+    response: OrderResponse;
   };
   topupBuyerWallet: {
     method: "POST";

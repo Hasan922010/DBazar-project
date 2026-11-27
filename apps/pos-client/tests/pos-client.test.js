@@ -52,13 +52,15 @@ test("Offline-First POS: 1-Click QR Waybill Auto-Inbound, 500 Offline Airplane M
   let lastReceipt = null;
   for (let i = 0; i < 500; i++) {
     const isReturn = i % 10 === 9; // 450 SALE (-450), 50 RETURN (+50) => net -400
+    // First 15 events share the exact same millisecond to verify numerical HLC counter ordering (:2: before :10:)
+    const simMs = i < 15 ? 1764180000000 : 1764180000000 + i;
     const res = pos.recordCheckoutEvent({
       variantId,
       quantity: 1,
       eventType: isReturn ? "RETURN" : "SALE",
       paymentMethod: i % 5 === 0 ? "NASIYA" : "CASH",
       customerName: i % 5 === 0 ? "Doimiy Mijoz" : "",
-      nowMs: 1764180000000 + i,
+      nowMs: simMs,
     });
     lastReceipt = res.receipt;
   }

@@ -886,6 +886,140 @@
         ]
       }
     },
+    "/api/v1/inventory/auto-restock": {
+      "get": {
+        "operationId": "getSmartAutoRestockDrafts",
+        "summary": "Smart Auto-Restock: Do'kondagi kam qolgan tovarlar uchun 1 tugmada tasdiqlanadigan avto-buyurtma loyihalari",
+        "tags": [
+          "Inventory & VMI"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoRestockDraftListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/inventory/demand-forecast": {
+      "get": {
+        "operationId": "getAiRegionalDemandForecast",
+        "summary": "AI Talab Prognozi: POS kassa sotuv tezligi asosida keyingi 30 kunlik hududiy talab prognozi",
+        "tags": [
+          "Inventory & VMI"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemandForecastListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/orders": {
       "post": {
         "operationId": "createB2BOrder",
@@ -961,6 +1095,71 @@
             }
           }
         }
+      },
+      "get": {
+        "operationId": "listB2BOrders",
+        "summary": "Tashkilotning B2B buyurtmalar ro'yxatini olish (Tenant-Isolated)",
+        "tags": [
+          "Orders"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/v1/orders/waybill/{waybill_qr_token}": {
@@ -996,6 +1195,383 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SubOrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders/{order_id}/cancel": {
+      "post": {
+        "operationId": "cancelPendingB2BOrder",
+        "summary": "To'lanmagan (PENDING) buyurtmani bekor qilish va zahiradagi ombor qoldig'ini qaytarish",
+        "tags": [
+          "Orders"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders/rfq/tenders": {
+      "post": {
+        "operationId": "createRfqTender",
+        "summary": "Yirik xaridorlar uchun yopiq narx taklifli Tender (RFQ) e'lon qilish",
+        "tags": [
+          "Tender (RFQ)"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RfqTenderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRfqTenderRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listRfqTenders",
+        "summary": "Ochiq va yakunlangan B2B Tenderlar (RFQ) ro'yxatini olish",
+        "tags": [
+          "Tender (RFQ)"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RfqTenderListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders/rfq/tenders/{tender_id}/bids": {
+      "post": {
+        "operationId": "submitSealedRfqBid",
+        "summary": "Tenderga yopiq narx taklifi (Sealed Bid) yuborish (raqobatchilardan izolyatsiyalangan)",
+        "tags": [
+          "Tender (RFQ)"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tender_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RfqBidResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitRfqBidRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/rfq/tenders/{tender_id}/award": {
+      "post": {
+        "operationId": "awardRfqTenderBestBid",
+        "summary": "Tenderda eng arzon taklifni g'olib deb topish va 1 bosishda B2B buyurtma yaratish",
+        "tags": [
+          "Tender (RFQ)"
+        ],
+        "parameters": [
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tender_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
                 }
               }
             }
@@ -3048,6 +3624,145 @@
         "title": "VmiTelemetryDashboardResponse",
         "type": "object"
       },
+      "AutoRestockDraftItemResponse": {
+        "properties": {
+          "lineage_id": {
+            "format": "uuid",
+            "title": "Lineage Id",
+            "type": "string"
+          },
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "product_name": {
+            "title": "Product Name",
+            "type": "string"
+          },
+          "current_pos_qty": {
+            "title": "Current Pos Qty",
+            "type": "integer"
+          },
+          "min_restock_threshold": {
+            "title": "Min Restock Threshold",
+            "type": "integer"
+          },
+          "recommended_order_qty": {
+            "title": "Recommended Order Qty",
+            "type": "integer"
+          },
+          "supplier_org_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Supplier Org Id"
+          }
+        },
+        "required": [
+          "lineage_id",
+          "variant_id",
+          "sku",
+          "product_name",
+          "current_pos_qty",
+          "min_restock_threshold",
+          "recommended_order_qty"
+        ],
+        "title": "AutoRestockDraftItemResponse",
+        "type": "object"
+      },
+      "AutoRestockDraftListResponse": {
+        "properties": {
+          "draft_count": {
+            "title": "Draft Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AutoRestockDraftItemResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "draft_count",
+          "items"
+        ],
+        "title": "AutoRestockDraftListResponse",
+        "type": "object"
+      },
+      "DemandForecastItemResponse": {
+        "properties": {
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "product_name": {
+            "title": "Product Name",
+            "type": "string"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          },
+          "historical_sold_qty": {
+            "title": "Historical Sold Qty",
+            "type": "integer"
+          },
+          "forecast_next_30d_qty": {
+            "title": "Forecast Next 30D Qty",
+            "type": "integer"
+          },
+          "confidence_level": {
+            "title": "Confidence Level",
+            "type": "string"
+          }
+        },
+        "required": [
+          "variant_id",
+          "sku",
+          "product_name",
+          "region",
+          "historical_sold_qty",
+          "forecast_next_30d_qty",
+          "confidence_level"
+        ],
+        "title": "DemandForecastItemResponse",
+        "type": "object"
+      },
+      "DemandForecastListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DemandForecastItemResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "DemandForecastListResponse",
+        "type": "object"
+      },
       "OrderCartItemInput": {
         "properties": {
           "offer_id": {
@@ -3266,6 +3981,178 @@
           "sub_orders"
         ],
         "title": "OrderResponse",
+        "type": "object"
+      },
+      "OrderListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OrderResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "OrderListResponse",
+        "type": "object"
+      },
+      "CreateRfqTenderRequest": {
+        "properties": {
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "target_quantity": {
+            "minimum": 1,
+            "title": "Target Quantity",
+            "type": "integer"
+          },
+          "max_unit_price_tiyin": {
+            "exclusiveMinimum": 0,
+            "title": "Max Unit Price Tiyin",
+            "type": "integer"
+          },
+          "region": {
+            "default": "Toshkent",
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "variant_id",
+          "target_quantity",
+          "max_unit_price_tiyin"
+        ],
+        "title": "CreateRfqTenderRequest",
+        "type": "object"
+      },
+      "RfqTenderResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "buyer_org_id": {
+            "format": "uuid",
+            "title": "Buyer Org Id",
+            "type": "string"
+          },
+          "variant_id": {
+            "format": "uuid",
+            "title": "Variant Id",
+            "type": "string"
+          },
+          "target_quantity": {
+            "title": "Target Quantity",
+            "type": "integer"
+          },
+          "max_unit_price_tiyin": {
+            "title": "Max Unit Price Tiyin",
+            "type": "integer"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "awarded_order_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Awarded Order Id"
+          }
+        },
+        "required": [
+          "id",
+          "buyer_org_id",
+          "variant_id",
+          "target_quantity",
+          "max_unit_price_tiyin",
+          "region",
+          "status"
+        ],
+        "title": "RfqTenderResponse",
+        "type": "object"
+      },
+      "RfqTenderListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RfqTenderResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "RfqTenderListResponse",
+        "type": "object"
+      },
+      "SubmitRfqBidRequest": {
+        "properties": {
+          "proposed_unit_price_tiyin": {
+            "exclusiveMinimum": 0,
+            "title": "Proposed Unit Price Tiyin",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "proposed_unit_price_tiyin"
+        ],
+        "title": "SubmitRfqBidRequest",
+        "type": "object"
+      },
+      "RfqBidResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "tender_id": {
+            "format": "uuid",
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "seller_org_id": {
+            "format": "uuid",
+            "title": "Seller Org Id",
+            "type": "string"
+          },
+          "proposed_unit_price_tiyin": {
+            "title": "Proposed Unit Price Tiyin",
+            "type": "integer"
+          },
+          "is_winner": {
+            "title": "Is Winner",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "tender_id",
+          "seller_org_id",
+          "proposed_unit_price_tiyin",
+          "is_winner"
+        ],
+        "title": "RfqBidResponse",
         "type": "object"
       },
       "WalletTopupRequest": {

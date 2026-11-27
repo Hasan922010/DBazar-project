@@ -1,0 +1,19 @@
+name: DBazar Antigravity B2B Security & Minimalist UI Audit
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  security-and-contract-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Backend & Frontend Verification Loop
+        run: ./run.sh test
+      - name: Headless Antigravity Security Audit
+        if: env.AGY_ENABLED == 'true'
+        run: |
+          agy -p "Run /b2b-security-audit on git diff origin/main..HEAD. Verify: 1) zero FloatField currency fields in Django models, 2) all financial writes use transaction.atomic() + idempotency_key + double-entry, 3) no cross-tenant leak in PosTelemetryPermission, 4) UI screens follow /ui-minimalist-design with zero jargon, 5) uv run pytest and all pnpm tests pass." --cwd $(pwd)

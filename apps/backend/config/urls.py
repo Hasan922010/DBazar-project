@@ -34,6 +34,7 @@ def healthz_view(request: HttpRequest) -> JsonResponse:
 
 
 urlpatterns = [
+    path("", healthz_view, name="root"),
     path("admin/", admin.site.urls),
     path("healthz/", healthz_view, name="healthz"),
     path("api/v1/", include(api_router.urls)),

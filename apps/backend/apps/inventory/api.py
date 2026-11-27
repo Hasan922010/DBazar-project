@@ -10,7 +10,11 @@ from django.http import HttpRequest
 from apps.iam.models import OrganizationRole, User
 from apps.iam.services import require_roles
 from apps.inventory.schemas import (
+    AutoRestockDraftItemResponse,
+    AutoRestockDraftListResponse,
     CreateWarehouseRequest,
+    DemandForecastItemResponse,
+    DemandForecastListResponse,
     InventoryStockResponse,
     ReceiveStockRequest,
     TelemetryPermissionRequest,
@@ -20,8 +24,10 @@ from apps.inventory.schemas import (
     WarehouseResponse,
 )
 from apps.inventory.services import (
+    calculate_ai_regional_demand_forecast,
     create_warehouse,
     get_isolated_vmi_telemetry,
+    get_smart_auto_restock_recommendations,
     receive_warehouse_stock,
     set_pos_telemetry_permission,
 )
@@ -170,4 +176,41 @@ def get_vmi_telemetry_endpoint(
         total_sold_qty=sum(i.sold_pos_qty for i in items),
         low_stock_alert_count=sum(1 for i in items if i.traffic_light_status == "RED"),
         items=items,
+    )
+
+
+@api_router.get(
+    "inventory/auto-restock",
+    response=AutoRestockDraftListResponse,
+    status_code=200,
+    tags=["Inventory & VMI"],
+    summary="Smart Auto-Restock: Do'kondagi kam qolgan tovarlar uchun 1 tugmada tasdiqlanadigan avto-buyurtma loyihalari",
+    auth=True,
+    operation_id="getSmartAutoRestockDrafts",
+)
+def get_auto_restock_endpoint(request: HttpRequest) -> AutoRestockDraftListResponse:
+    user: User = request.user  # type: ignore[assignment]
+    customer_org = require_roles(user, [OrganizationRole.CUSTOMER])
+    recs = get_smart_auto_restock_recommendations(customer_org)
+    return AutoRestockDraftListResponse(
+        draft_count=len(recs),
+        items=[AutoRestockDraftItemResponse(**r) for r in recs],
+    )
+
+
+@api_router.get(
+    "inventory/demand-forecast",
+    response=DemandForecastListResponse,
+    status_code=200,
+    tags=["Inventory & VMI"],
+    summary="AI Talab Prognozi: POS kassa sotuv tezligi asosida keyingi 30 kunlik hududiy talab prognozi",
+    auth=True,
+    operation_id="getAiRegionalDemandForecast",
+)
+def get_demand_forecast_endpoint(request: HttpRequest) -> DemandForecastListResponse:
+    user: User = request.user  # type: ignore[assignment]
+    viewer_org = require_roles(user, [OrganizationRole.MANUFACTURER, OrganizationRole.INTERMEDIARY])
+    forecasts = calculate_ai_regional_demand_forecast(viewer_org)
+    return DemandForecastListResponse(
+        items=[DemandForecastItemResponse(**f) for f in forecasts],
     )

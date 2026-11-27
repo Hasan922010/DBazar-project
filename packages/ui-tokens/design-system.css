@@ -1,69 +1,164 @@
 /*
- * DBazar Minimalist UX/UI Design System Foundation (`@dbazar/ui-tokens`)
- * Follows `/ui-minimalist-design` and `agency-ux-architect`:
- * 1. Clean high-contrast palette (#FFFFFF / #F8FAFC background, #0F172A text, 1 brand accent #2563EB)
- * 2. 3 semantic traffic-light colors (Green: tayyor/yetarli, Yellow: yo'lda/kamaydi, Red: tugamoqda/qarz)
- * 3. Touch targets: 48px+ mobile/web, 56px+ POS cashier buttons
- * 4. Prices & totals in `tabular-nums`
- * 5. Light / Dark / System theme support
+ * DBazar Comprehensive UI Design System (`@dbazar/ui-tokens/design-system.css`)
+ * Crafted by `agency-ux-architect`, `agency-ui-designer`, and `agency-frontend-developer`.
+ * Adheres strictly to `/ui-minimalist-design`:
+ * - 1 Primary CTA per screen (3-second rule)
+ * - Zero technical jargon in visible labels
+ * - High-contrast WCAG 2.1 AA palette (#FFFFFF / #F8FAFC light, #0B1120 / #1E293B dark, #2563EB brand accent)
+ * - 3 Traffic-Light semantic statuses (Green #16A34A, Yellow #D97706, Red #DC2626)
+ * - 48px+ mobile/web touch targets, 56px+ POS cashier buttons, `tabular-nums` numbers
  */
 :root {
+  /* Surface & Canvas Palette */
   --bg-primary: #FFFFFF;
   --bg-surface: #F8FAFC;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F1F5F9;
+  --bg-glass: rgba(255, 255, 255, 0.88);
+
+  /* Typography Hierarchy */
   --text-primary: #0F172A;
   --text-secondary: #475569;
-  --border-subtle: #E2E8F0;
+  --text-muted: #64748B;
 
+  /* Borders & Dividers */
+  --border-subtle: #E2E8F0;
+  --border-strong: #CBD5E1;
+
+  /* Single Brand Accent */
   --brand-primary: #2563EB;
   --brand-primary-hover: #1D4ED8;
+  --brand-primary-soft: #EFF6FF;
   --brand-on-primary: #FFFFFF;
 
+  /* 3 Traffic-Light Statuses */
   --status-ready: #16A34A;
   --status-ready-bg: #DCFCE7;
+  --status-ready-text: #166534;
+
   --status-pending: #D97706;
   --status-pending-bg: #FEF3C7;
+  --status-pending-text: #92400E;
+
   --status-alert: #DC2626;
   --status-alert-bg: #FEE2E2;
+  --status-alert-text: #991B1B;
 
+  /* Touch Targets & 4px/8px Spacing Grid */
   --touch-target-mobile: 48px;
   --touch-target-pos: 56px;
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
 
-  --space-2: 0.5rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
+  /* Radii & Shadows */
+  --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.06), 0 1px 3px -1px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 4px 10px -3px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 20px 40px -12px rgba(15, 23, 42, 0.16);
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="dark"] {
-  --bg-primary: #0F172A;
-  --bg-surface: #1E293B;
+  --bg-primary: #0B1120;
+  --bg-surface: #111827;
+  --bg-elevated: #1E293B;
+  --bg-subtle: #1E293B;
+  --bg-glass: rgba(17, 24, 39, 0.88);
+
   --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --border-subtle: #334155;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+
+  --border-subtle: #1E293B;
+  --border-strong: #334155;
+
+  --brand-primary: #3B82F6;
+  --brand-primary-hover: #2563EB;
+  --brand-primary-soft: rgba(59, 130, 246, 0.15);
+
+  --status-ready-bg: rgba(22, 163, 74, 0.18);
+  --status-ready-text: #4ADE80;
+  --status-pending-bg: rgba(217, 119, 6, 0.18);
+  --status-pending-text: #FBBF24;
+  --status-alert-bg: rgba(220, 38, 38, 0.18);
+  --status-alert-text: #F87171;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg-primary: #0F172A;
-    --bg-surface: #1E293B;
+    --bg-primary: #0B1120;
+    --bg-surface: #111827;
+    --bg-elevated: #1E293B;
+    --bg-subtle: #1E293B;
+    --bg-glass: rgba(17, 24, 39, 0.88);
     --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --border-subtle: #334155;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --border-subtle: #1E293B;
+    --border-strong: #334155;
+    --brand-primary: #3B82F6;
+    --brand-primary-hover: #2563EB;
+    --brand-primary-soft: rgba(59, 130, 246, 0.15);
+    --status-ready-bg: rgba(22, 163, 74, 0.18);
+    --status-ready-text: #4ADE80;
+    --status-pending-bg: rgba(217, 119, 6, 0.18);
+    --status-pending-text: #FBBF24;
+    --status-alert-bg: rgba(220, 38, 38, 0.18);
+    --status-alert-text: #F87171;
   }
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Interactive Buttons */
+button, .btn-primary-cta, .btn-secondary, .btn-pos-pay, .btn-qr-inbound, .btn-call {
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  user-select: none;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
 }
 
 .btn-primary-cta {
@@ -71,21 +166,127 @@ body {
   padding: 0 var(--space-6);
   background-color: var(--brand-primary);
   color: var(--brand-on-primary);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-primary-cta:hover {
+  background-color: var(--brand-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary {
+  min-height: var(--touch-target-mobile);
+  padding: 0 var(--space-4);
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  font-size: 0.9rem;
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-subtle);
+  border-color: var(--text-muted);
 }
 
 .btn-pos-pay {
   min-height: var(--touch-target-pos);
+  width: 100%;
   padding: 0 var(--space-8);
-  background-color: var(--status-ready);
+  background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
   color: #FFFFFF;
   border: none;
   border-radius: var(--radius-lg);
   font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 20px -4px rgba(22, 163, 74, 0.45);
+}
+
+.btn-pos-pay:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -4px rgba(22, 163, 74, 0.55);
+}
+
+.btn-qr-inbound {
+  min-height: var(--touch-target-pos);
+  padding: 0 var(--space-6);
+  background-color: var(--brand-primary-soft);
+  color: var(--brand-primary);
+  border: 1.5px solid var(--brand-primary);
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
   font-weight: 700;
-  cursor: pointer;
+}
+
+.btn-qr-inbound:hover {
+  background-color: var(--brand-primary);
+  color: #FFFFFF;
+}
+
+/* Status Badges (Traffic Light) */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-badge.green, .status-badge[data-status="GREEN"] {
+  background-color: var(--status-ready-bg);
+  color: var(--status-ready-text);
+}
+
+.status-badge.yellow, .status-badge[data-status="YELLOW"] {
+  background-color: var(--status-pending-bg);
+  color: var(--status-pending-text);
+}
+
+.status-badge.red, .status-badge[data-status="RED"] {
+  background-color: var(--status-alert-bg);
+  color: var(--status-alert-text);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.green { background-color: var(--status-ready); box-shadow: 0 0 0 3px var(--status-ready-bg); }
+.dot.yellow { background-color: var(--status-pending); box-shadow: 0 0 0 3px var(--status-pending-bg); }
+.dot.red { background-color: var(--status-alert); box-shadow: 0 0 0 3px var(--status-alert-bg); }
+
+/* Theme Toggle Pill */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  gap: 2px;
+}
+
+.theme-toggle button {
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.theme-toggle button.active,
+.theme-toggle button[aria-checked="true"] {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-xs);
 }

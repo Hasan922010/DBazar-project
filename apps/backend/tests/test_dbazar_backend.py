@@ -425,7 +425,9 @@ class TestDbazarArchitectureAndSecurityAudit:
             assert status == 200
             assert pod_resp["status"] == "DELIVERED"
 
-        # Verify Escrow vault balance is 0 tiyin and Double-Entry DEBIT == CREDIT
+        # Verify Escrow vault balance is 0 tiyin, reserved_qty is released (Fix #2), and Double-Entry DEBIT == CREDIT
+        oil_stock_after_pod = InventoryStock.objects.get(batch_id="BATCH-OIL-2026-11")
+        assert oil_stock_after_pod.reserved_qty == 0
         escrow_vault = LedgerAccount.objects.get(organization__isnull=True, account_type="ESCROW_VAULT")
         assert escrow_vault.balance_tiyin == 0
         total_debits = (
@@ -566,6 +568,113 @@ class TestDbazarArchitectureAndSecurityAudit:
         assert status == 200
         assert credit_resp["credit_limit_tiyin"] >= 500_000_000
         assert credit_resp["discount_tier_bps"] == 500
+
+        # 9. Phase 4 Smart Auto-Restock & Phase 5 AI Regional Demand Forecast
+        status, restock_resp = _api_call(
+            client,
+            "GET",
+            "/api/v1/inventory/auto-restock",
+            token=store_token,
+        )
+        assert status == 200, restock_resp
+        assert restock_resp["draft_count"] >= 1
+        assert any(item["sku"] == "UN-50KG" for item in restock_resp["items"])
+
+        status, forecast_resp = _api_call(
+            client,
+            "GET",
+            "/api/v1/inventory/demand-forecast",
+            token=mfg_token,
+        )
+        assert status == 200, forecast_resp
+        assert len(forecast_resp["items"]) == 1
+        assert forecast_resp["items"][0]["sku"] == "OLIYA-1L"
+        assert forecast_resp["items"][0]["forecast_next_30d_qty"] >= 500
+
+        # 10. Phase 5 Sealed-Bid Tender (RFQ): Create Tender -> Two Sealed Bids -> Award Lowest Bid
+        status, tender_resp = _api_call(
+            client,
+            "POST",
+            "/api/v1/orders/rfq/tenders",
+            {
+                "variant_id": variant_oil_id,
+                "target_quantity": 1000,
+                "max_unit_price_tiyin": 1_650_000,
+                "region": "Toshkent",
+            },
+            token=store_token,
+        )
+        assert status == 201, tender_resp
+        tender_id = tender_resp["id"]
+
+        # Distributor A bids 1,600,000 tiyin; Manufacturer bids 1,550,000 tiyin
+        status, bid_a = _api_call(
+            client,
+            "POST",
+            f"/api/v1/orders/rfq/tenders/{tender_id}/bids",
+            {"proposed_unit_price_tiyin": 1_600_000},
+            token=dist_a_token,
+        )
+        assert status == 201, bid_a
+
+        status, bid_mfg = _api_call(
+            client,
+            "POST",
+            f"/api/v1/orders/rfq/tenders/{tender_id}/bids",
+            {"proposed_unit_price_tiyin": 1_550_000},
+            token=mfg_token,
+        )
+        assert status == 201, bid_mfg
+
+        # Buyer awards tender -> automatically selects Manufacturer's lowest bid (1,550,000 * 1000 = 1,550,000,000 tiyin)
+        status, awarded_order = _api_call(
+            client,
+            "POST",
+            f"/api/v1/orders/rfq/tenders/{tender_id}/award",
+            {},
+            token=store_token,
+        )
+        assert status == 200, awarded_order
+        assert awarded_order["total_amount_tiyin"] == 1_550_000_000
+        assert awarded_order["sub_orders"][0]["seller_org_id"] == mfg_org_id
+
+        # 11. Pending Order Cancellation & Reserved Stock Restoration
+        stock_before_cancel = InventoryStock.objects.get(batch_id="BATCH-OIL-2026-11").available_qty
+        status, temp_order = _api_call(
+            client,
+            "POST",
+            "/api/v1/orders",
+            {
+                "idempotency_key": str(uuid.uuid4()),
+                "is_preorder": False,
+                "items": [{"offer_id": offer_mfg_id, "quantity": 20}],
+            },
+            token=store_token,
+        )
+        assert status == 201
+        assert InventoryStock.objects.get(batch_id="BATCH-OIL-2026-11").available_qty == stock_before_cancel - 20
+
+        status, cancelled_order = _api_call(
+            client,
+            "POST",
+            f"/api/v1/orders/{temp_order['id']}/cancel",
+            {},
+            token=store_token,
+        )
+        assert status == 200
+        assert cancelled_order["status"] == "CANCELLED"
+        stock_after_cancel = InventoryStock.objects.get(batch_id="BATCH-OIL-2026-11")
+        assert stock_after_cancel.available_qty == stock_before_cancel
+        assert stock_after_cancel.reserved_qty == 0
+
+        # Verify list endpoints for Orders and RFQ Tenders
+        status, orders_list = _api_call(client, "GET", "/api/v1/orders", token=store_token)
+        assert status == 200
+        assert len(orders_list["items"]) >= 2
+
+        status, tenders_list = _api_call(client, "GET", "/api/v1/orders/rfq/tenders", token=store_token)
+        assert status == 200
+        assert len(tenders_list["items"]) == 1
 
         out_yaml = tmp_path / "openapi.yaml"
         call_command("export_openapi", output=str(out_yaml))
